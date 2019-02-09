@@ -3,8 +3,8 @@ function DeckPlayer(elementId) {
     this.playlist = [];
     this.currentSong = 0;
     this.playerElement = document.getElementById(elementId);
-    this.loadTrack = function(trackNum){
-        _this.playerElement.src=_this.playlist[trackNum].file;
+    this.loadTrack = function (trackNum) {
+        _this.playerElement.src = _this.playlist[trackNum].file;
     }
 
     this.playNext = function () {
@@ -20,14 +20,16 @@ function DeckPlayer(elementId) {
 
     }
 
-    this.setPlaylist = function(newPlaylist){
-        // this.playerElement.stop();
+    this.setPlaylist = function (newPlaylist) {
+        if (typeof this.playerElement.stop !== "undefined") {
+            this.playerElement.stop();
+        }
         this.playlist = newPlaylist.files;
         this.loadTrack(0);
         this.playerElement.play();
     }
 
-    this.playerElement.onended = function(){
+    this.playerElement.onended = function () {
         _this.playNext();
     }
 }

@@ -14,17 +14,22 @@
     </audio>
     <audio id="deck2" controls>
     </audio>
-    <button onclick="playNext()">Next</button>
+    <button onclick="deck1Player.playNext();">Next</button>
     <button onclick="crossfade(.01)">Fade</button>
+    <button onclick="loadPlaylist(deck1Player, 0)">0</button>
+    <button onclick="loadPlaylist(deck1Player, 1)">1</button>
+    <button onclick="loadPlaylist(deck1Player, 2)">2</button>
+    <button onclick="loadPlaylist(deck1Player, 3)">3</button>
+    <button onclick="loadPlaylist(deck1Player, 4)">4</button>
 
 </body>
 <script>
     var deck1Player = new DeckPlayer('deck1');
     var deck2Player = new DeckPlayer('deck2');
-    deck1Player.setPlaylist(playlists[0]);
-    var nextFile = "http://127.0.0.1:8081/music/Anguish.mp3";
-    var deck1Player = document.getElementById('deck1');
 
+    function loadPlaylist(player, listnum){
+        player.setPlaylist(playlists[listnum]);
+    }
 
     // deck1Player.onended = function () {
     //     playNext();

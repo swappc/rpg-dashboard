@@ -1,30 +1,33 @@
 function DeckPlayer(elementId) {
+    var _this = this;
     this.playlist = [];
     this.currentSong = 0;
     this.playerElement = document.getElementById(elementId);
     this.loadTrack = function(trackNum){
-        playerElement.src=playlist[trackNum].file;
+        _this.playerElement.src=_this.playlist[trackNum].file;
     }
 
     this.playNext = function () {
-        if (playlist.length === 0) {
+        if (_this.playlist.length === 0) {
             return;
         }
-        currentSong++;
-        if (currentSong === playlist.length) {
-            currentSong = 0;
+        _this.currentSong++;
+        if (_this.currentSong === _this.playlist.length) {
+            _this.currentSong = 0;
         }
+        this.loadTrack(this.currentSong);
+        this.playerElement.play();
 
     }
 
     this.setPlaylist = function(newPlaylist){
-        playerElement.stop();
-        playlist = newPlaylist;
-        loadTrack(0);
-        playerElement.play();
+        // this.playerElement.stop();
+        this.playlist = newPlaylist.files;
+        this.loadTrack(0);
+        this.playerElement.play();
     }
 
-    playerElement.onended = function(){
-        playNext();
+    this.playerElement.onended = function(){
+        _this.playNext();
     }
 }

@@ -1,0 +1,86 @@
+<html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="./playlists.js"></script>
+
+
+
+
+
+
+<body>
+
+    <audio id="deck1" controls autoplay>
+        <source src="http://127.0.0.1:8081/music/Lost Frontier.mp3" type="audio/mpeg" />
+    </audio>
+    <audio id="deck2" controls>
+        <source src="http://127.0.0.1:8081/music/Anguish.mp3" type="audio/mpeg" />
+    </audio>
+    <button onclick="playNext()">Next</button>
+    <button onclick="crossfade(.01)">Fade</button>
+
+</body>
+<script>
+    var nextFile = "http://127.0.0.1:8081/music/Anguish.mp3";
+    var deck1Player = document.getElementById('deck1');
+
+
+    deck1Player.onended = function () {
+        playNext();
+
+    }
+
+    function playNext() {
+        deck1Player.src = nextFile;
+    }
+
+    var deck2Player = document.getElementById('deck2');
+    deck2Player.volume = 0;
+
+
+    function crossfade(stepSize) {
+        if (stepSize > 1 || stepSize <= 0) {
+            stepSize = 0.01;
+        }
+        var toIncrease = deck1Player;
+        var toDecrease = deck2Player;
+
+        if (deck1Player.volume > deck2.volume) {
+            toIncrease = deck2Player;
+            toDecrease = deck1Player;
+        }
+
+        var increaseDistance = 1 - toIncrease.volume;
+        var decreaseDistance = toDecrease.volume;
+        var farthestDistance = Math.max(increaseDistance, decreaseDistance);
+        var iterations = Math.ceil(farthestDistance / stepSize)
+        toIncrease.play();
+        crossFade(toDecrease, toIncrease, stepSize, iterations);
+    }
+
+    function crossFade(toDecrease, toIncrease, stepSize, iterations) {
+
+        if (toDecrease.volume > 0) {
+            if (toDecrease.volume < stepSize) {
+                toDecrease.volume = 0;
+            } else {
+                toDecrease.volume -= stepSize;
+            }
+        }
+        if (toIncrease.volume < 1) {
+            if (1 - toIncrease.volume < stepSize) {
+                toIncrease.volume = 1;
+            } else {
+                toIncrease.volume += stepSize;
+            }
+        }
+        if (iterations > 0) {
+            setTimeout(function () { crossFade(toDecrease, toIncrease, stepSize, iterations - 1) }, 10);
+        } else {
+            toDecrease.pause();
+        }
+
+    }
+
+</script>
+
+</html>

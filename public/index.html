@@ -1,93 +1,171 @@
-<html>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script src="./playlists.js"></script>
-<script src="./DeckPlayer.js"></script>
+<!doctype html>
+<html lang="en">
 
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script src="./playlists.js"></script>
+    <script src="./DeckPlayer.js"></script>
+    <script src="./LaunchpadController.js"></script>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
+        crossorigin="anonymous">
 
-
-
-
+    <title>Hello, world!</title>
+</head>
 
 <body>
+    <h1>RPG Dashboard
+    </h1>
+    <div class="container">
+        <div class="row">
+            <div class="col"> <audio id="deck1" controls autoplay>
+                </audio></div>
+            <div class="col"> <audio id="deck2" controls>
+                </audio></div>
+        </div>
+        <div class="row">
+            <div class="col" id="deck1Controls">
+                <!-- <button type="button" class="btn btn-primary" onclick="deck1Player.playNext();">Next</button>
+                <button type="button" class="btn btn-primary" onclick="crossfade(.01)">Fade</button>
+                <button type="button" class="btn btn-primary" onclick="loadPlaylist(deck1Player, 0)">0</button>
+                <button type="button" class="btn btn-primary" onclick="loadPlaylist(deck1Player, 1)">1</button>
+                <button type="button" class="btn btn-primary" onclick="loadPlaylist(deck1Player, 2)">2</button>
+                <button type="button" class="btn btn-primary" onclick="loadPlaylist(deck1Player, 3)">3</button>
+                <button type="button" class="btn btn-primary" onclick="loadPlaylist(deck1Player, 4)">4</button> -->
+            </div>
+            <div class="col" id="deck2Controls"></div>
+        </div>
+    </div>
 
-    <audio id="deck1" controls autoplay>
-    </audio>
-    <audio id="deck2" controls>
-    </audio>
-    <button onclick="deck1Player.playNext();">Next</button>
-    <button onclick="crossfade(.01)">Fade</button>
-    <button onclick="loadPlaylist(deck1Player, 0)">0</button>
-    <button onclick="loadPlaylist(deck1Player, 1)">1</button>
-    <button onclick="loadPlaylist(deck1Player, 2)">2</button>
-    <button onclick="loadPlaylist(deck1Player, 3)">3</button>
-    <button onclick="loadPlaylist(deck1Player, 4)">4</button>
+
+
+
+    <script>
+         var midiController = new Launchpad();
+
+        var deck1Player = new DeckPlayer('deck1');
+        var deck2Player = new DeckPlayer('deck2');
+        playlists.forEach((element, index) => {
+            var btn = document.createElement("BUTTON");        // Create a <button> element
+            var t = document.createTextNode(element.name);       // Create a text node
+            btn.appendChild(t);
+            btn.classList.add("btn");
+            btn.classList.add("btn-light");
+            btn.onclick = () => loadPlaylist(deck1Player, index);                               // Append the text to <button>
+            midiController.addHandler(0,index, btn.onclick);
+                document.getElementById('deck1Controls').appendChild(btn);
+        });
+        playlists.forEach((element, index) => {
+            var btn = document.createElement("BUTTON");        // Create a <button> element
+            var t = document.createTextNode(element.name);       // Create a text node
+            btn.appendChild(t);
+            btn.classList.add("btn");
+            btn.classList.add("btn-light");
+            btn.onclick = () => loadPlaylist(deck2Player, index);                               // Append the text to <button>
+            midiController.addHandler(1,index, btn.onclick);
+            document.getElementById('deck2Controls').appendChild(btn);
+        });
+        
+       
+        function loadPlaylist(player, listnum) {
+            player.setPlaylist(playlists[listnum]);
+        }
+
+    
+
+        function midiInit(midi) {
+            var inputs = midi.inputs.values();
+            for (var input = inputs.next();
+                input && !input.done;
+                input = inputs.next()) {
+                if (input.value.name === 'Launchpad Mini MIDI 1') {
+                    // each time there is a midi message call the onMIDIMessage function
+                    input.value.onmidimessage = midiController.handleMessage;
+                }
+            }
+
+            console.log('MIDI initialized!');
+        }
+        function midiFailure() {
+            console.log('Error initializing MIDI');
+        }
+
+        if (navigator.requestMIDIAccess) {
+            console.log('Browser supports MIDI!');
+            navigator.requestMIDIAccess().then(
+                midiInit, midiFailure
+            );
+        }
+
+        // deck1Player.onended = function () {
+        //     playNext();
+
+        // }
+
+        // function playNext() {
+        //     deck1Player.src = nextFile;
+        // }
+
+        // var deck2Player = document.getElementById('deck2');
+        // deck2Player.volume = 0;
+
+
+        // function crossfade(stepSize) {
+        //     if (stepSize > 1 || stepSize <= 0) {
+        //         stepSize = 0.01;
+        //     }
+        //     var toIncrease = deck1Player;
+        //     var toDecrease = deck2Player;
+
+        //     if (deck1Player.volume > deck2.volume) {
+        //         toIncrease = deck2Player;
+        //         toDecrease = deck1Player;
+        //     }
+
+        //     var increaseDistance = 1 - toIncrease.volume;
+        //     var decreaseDistance = toDecrease.volume;
+        //     var farthestDistance = Math.max(increaseDistance, decreaseDistance);
+        //     var iterations = Math.ceil(farthestDistance / stepSize)
+        //     toIncrease.play();
+        //     crossFade(toDecrease, toIncrease, stepSize, iterations);
+        // }
+
+        // function crossFade(toDecrease, toIncrease, stepSize, iterations) {
+
+        //     if (toDecrease.volume > 0) {
+        //         if (toDecrease.volume < stepSize) {
+        //             toDecrease.volume = 0;
+        //         } else {
+        //             toDecrease.volume -= stepSize;
+        //         }
+        //     }
+        //     if (toIncrease.volume < 1) {
+        //         if (1 - toIncrease.volume < stepSize) {
+        //             toIncrease.volume = 1;
+        //         } else {
+        //             toIncrease.volume += stepSize;
+        //         }
+        //     }
+        //     if (iterations > 0) {
+        //         setTimeout(function () { crossFade(toDecrease, toIncrease, stepSize, iterations - 1) }, 10);
+        //     } else {
+        //         toDecrease.pause();
+        //     }
+
+        // }
+
+    </script>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
+        crossorigin="anonymous"></script>
 
 </body>
-<script>
-    var deck1Player = new DeckPlayer('deck1');
-    var deck2Player = new DeckPlayer('deck2');
-
-    function loadPlaylist(player, listnum){
-        player.setPlaylist(playlists[listnum]);
-    }
-
-    // deck1Player.onended = function () {
-    //     playNext();
-
-    // }
-
-    // function playNext() {
-    //     deck1Player.src = nextFile;
-    // }
-
-    // var deck2Player = document.getElementById('deck2');
-    // deck2Player.volume = 0;
-
-
-    // function crossfade(stepSize) {
-    //     if (stepSize > 1 || stepSize <= 0) {
-    //         stepSize = 0.01;
-    //     }
-    //     var toIncrease = deck1Player;
-    //     var toDecrease = deck2Player;
-
-    //     if (deck1Player.volume > deck2.volume) {
-    //         toIncrease = deck2Player;
-    //         toDecrease = deck1Player;
-    //     }
-
-    //     var increaseDistance = 1 - toIncrease.volume;
-    //     var decreaseDistance = toDecrease.volume;
-    //     var farthestDistance = Math.max(increaseDistance, decreaseDistance);
-    //     var iterations = Math.ceil(farthestDistance / stepSize)
-    //     toIncrease.play();
-    //     crossFade(toDecrease, toIncrease, stepSize, iterations);
-    // }
-
-    // function crossFade(toDecrease, toIncrease, stepSize, iterations) {
-
-    //     if (toDecrease.volume > 0) {
-    //         if (toDecrease.volume < stepSize) {
-    //             toDecrease.volume = 0;
-    //         } else {
-    //             toDecrease.volume -= stepSize;
-    //         }
-    //     }
-    //     if (toIncrease.volume < 1) {
-    //         if (1 - toIncrease.volume < stepSize) {
-    //             toIncrease.volume = 1;
-    //         } else {
-    //             toIncrease.volume += stepSize;
-    //         }
-    //     }
-    //     if (iterations > 0) {
-    //         setTimeout(function () { crossFade(toDecrease, toIncrease, stepSize, iterations - 1) }, 10);
-    //     } else {
-    //         toDecrease.pause();
-    //     }
-
-    // }
-
-</script>
 
 </html>

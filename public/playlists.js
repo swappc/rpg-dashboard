@@ -65,7 +65,7 @@ var playlists = [
         files: [
             {
                 name: "46 - Watch the Skies.mp3",
-                file: "home/tyler/Music/D&D/Skyrim/46 - Watch the Skies.mp3"
+                file: "http://127.0.0.1:8081/music/Skyrim/46 - Watch the Skies.mp3"
             },
             {
                 name: "Five Armies.mp3",

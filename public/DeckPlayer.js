@@ -5,6 +5,7 @@ function DeckPlayer(elementId) {
     this.playerElement = document.getElementById(elementId);
     this.loadTrack = function (trackNum) {
         _this.playerElement.src = _this.playlist[trackNum].file;
+        document.getElementById('nowPlayingLabel').textContent=_this.playlist[trackNum].name;
     }
 
     this.playNext = function () {

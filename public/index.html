@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <script src="./playlists.js"></script>
     <script src="./DeckPlayer.js"></script>
+    <script src="./Key.js"></script>
     <script src="./LaunchpadController.js"></script>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
@@ -20,21 +21,23 @@
     </h1>
     <div class="container">
         <div class="row">
+            <div class="col">
+                Playlist: 
+                <label id="currentPlaylistLabel"></label>
+            </div>
+            <div class="col">
+                Now playing:
+                <label id="nowPlayingLabel"></label>
+            </div>
+        </div>
+        <div class="row">
             <div class="col"> <audio id="deck1" controls autoplay>
                 </audio></div>
             <div class="col"> <audio id="deck2" controls>
                 </audio></div>
         </div>
         <div class="row">
-            <div class="col" id="deck1Controls">
-                <!-- <button type="button" class="btn btn-primary" onclick="deck1Player.playNext();">Next</button>
-                <button type="button" class="btn btn-primary" onclick="crossfade(.01)">Fade</button>
-                <button type="button" class="btn btn-primary" onclick="loadPlaylist(deck1Player, 0)">0</button>
-                <button type="button" class="btn btn-primary" onclick="loadPlaylist(deck1Player, 1)">1</button>
-                <button type="button" class="btn btn-primary" onclick="loadPlaylist(deck1Player, 2)">2</button>
-                <button type="button" class="btn btn-primary" onclick="loadPlaylist(deck1Player, 3)">3</button>
-                <button type="button" class="btn btn-primary" onclick="loadPlaylist(deck1Player, 4)">4</button> -->
-            </div>
+            <div class="col" id="deck1Controls"></div>
             <div class="col" id="deck2Controls"></div>
         </div>
     </div>
@@ -43,7 +46,14 @@
 
 
     <script>
-         var midiController = new Launchpad();
+
+        function loadPlaylist(player, listnum) {
+            document.getElementById('currentPlaylistLabel').textContent=playlists[listnum].name;
+            player.setPlaylist(playlists[listnum]);
+        }
+
+
+        var buttonDefs = new Array();
 
         var deck1Player = new DeckPlayer('deck1');
         var deck2Player = new DeckPlayer('deck2');
@@ -53,9 +63,11 @@
             btn.appendChild(t);
             btn.classList.add("btn");
             btn.classList.add("btn-light");
-            btn.onclick = () => loadPlaylist(deck1Player, index);                               // Append the text to <button>
-            midiController.addHandler(0,index, btn.onclick);
-                document.getElementById('deck1Controls').appendChild(btn);
+            btn.onclick = () => loadPlaylist(deck1Player, index);
+
+            buttonDefs.push({ page: 0, x: index, y: 0, key: CallbackKey("hi_green", "hi_amber", btn.onclick) });
+
+            document.getElementById('deck1Controls').appendChild(btn);
         });
         playlists.forEach((element, index) => {
             var btn = document.createElement("BUTTON");        // Create a <button> element
@@ -64,16 +76,11 @@
             btn.classList.add("btn");
             btn.classList.add("btn-light");
             btn.onclick = () => loadPlaylist(deck2Player, index);                               // Append the text to <button>
-            midiController.addHandler(1,index, btn.onclick);
+            buttonDefs.push({ page: 0, x: index, y: 1, key: CallbackKey("hi_green", "hi_amber", btn.onclick) });
+
             document.getElementById('deck2Controls').appendChild(btn);
         });
-        
-       
-        function loadPlaylist(player, listnum) {
-            player.setPlaylist(playlists[listnum]);
-        }
 
-    
 
         function midiInit(midi) {
             var inputs = midi.inputs.values();
@@ -82,11 +89,23 @@
                 input = inputs.next()) {
                 if (input.value.name === 'Launchpad Mini MIDI 1') {
                     // each time there is a midi message call the onMIDIMessage function
-                    input.value.onmidimessage = midiController.handleMessage;
+                    input.value.onmidimessage = NLM.incomingData;
+                    break;
                 }
             }
 
-            console.log('MIDI initialized!');
+            var outputs = midi.outputs.values();
+            for (var output = outputs.next();
+                output && !output.done;
+                output = outputs.next()) {
+                if (output.value.name === 'Launchpad Mini MIDI 1') {
+                    // each time there is a midi message call the onMIDIMessage function
+                    console.log('Found output midi');
+                    NLM.init(output.value, buttonDefs);
+                    break;
+                }
+            }
+
         }
         function midiFailure() {
             console.log('Error initializing MIDI');

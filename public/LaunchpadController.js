@@ -1,42 +1,114 @@
-function Launchpad() {
 
+function PushKey(colordef, colorpush) {
+    var that = new Key;
 
-    function getRow(message) {
-        if (message.data[0] === 144) {
-            return Math.floor(message.data[1] / 16);
-        }
-        return 8;
+    that.setColor(colordef);
+
+    that.colordef = colordef;
+    that.colorpush = colorpush;
+
+    that.onPush = function () {
+        this.setColor(this.colorpush);
     }
 
-    function getColumn(message) {
-        if (message.data[0] === 144) {
-            return message.data[1] % 16;
-        }
-        return message.data[1] - 104;
+    that.onRelease = function () {
+        this.setColor(this.colordef);
     }
 
-    this.handlers=[];
-    this.initHandlers= function() {
-        this.handlers.length=0;
-        for (row = 0; row < 9; row++) {
-            var rowHandlers = [];
-
-            for (col = 0; col < 9; col++) {
-                rowHandlers.push(() => { });
-            }
-            this.handlers.push(rowHandlers);
-        }
-    }
-    this.initHandlers();
-
-    this.addHandler = function(row, col, handler){
-        this.handlers[row][col] = handler;
-    }
-
-    this.handleMessage = function (message) {
-        var handler = this.handlers[getRow(message)][getColumn(message)];
-        handler(message);
-        console.log(message.data);
-
-    }.bind(this);
+    return that;
 }
+
+function CallbackKey(colordef, colorpush, callback){
+    var that = PushKey(colordef, colorpush);
+
+    that.onPushOrig = that.onPush;
+    that.onPush = function () {
+        callback();
+        this.onPushOrig();
+    }
+    return that;
+}
+
+function PageSelectKey() {
+    var that = new Key;
+
+    that.onPush = function () {
+        NLM.btns[NLM.page][8][NLM.page].setColor("black");
+        NLM.page = this.y;
+        NLM.btns[NLM.page][8][NLM.page].setColor("hi_amber");
+        NLM.drawPage();
+    }
+    return that;
+}
+
+NLM = Object;
+
+NLM.init = function (device, buttonDefs) {
+    NLM.page = 0;
+    console.log('MIDI initialized!');
+
+    //Setup btnstate which is for phy. state
+    NLM.btns = new Array();
+    for (page = 0; page < 8; page++) {
+        NLM.btns[page] = new Array();
+        for (x = 0; x < 9; x++) {
+            NLM.btns[page][x] = new Array();
+            for (y = 0; y < 9; y++) {
+                var tmp = new Key;
+                if (x == 8) {
+                    tmp = PageSelectKey();
+                }
+                NLM.setupBtn(page, x, y, device, tmp);
+            }
+        }
+    }
+
+    buttonDefs.forEach(element => {
+        NLM.setupBtn(element.page,element.x,element.y,device,element.key);
+    });
+    // NLM.setupBtn(0, 0, 0, device, new PushKey("hi_green", "hi_amber"));
+
+    // NLM.setupBtn(1, 0, 1, device, new PushKey("hi_green", "hi_amber"));
+
+    //Set default page led
+    NLM.btns[NLM.page][8][0].setColor("hi_amber");
+
+
+    this.drawPage();
+};
+
+NLM.setupBtn = function (page, x, y, device, btn) {
+    NLM.btns[page][x][y] = btn;
+    NLM.btns[page][x][y].init(page, x, y, device);
+}
+
+NLM.incomingData = function (message) {
+    //Just to make life easier
+    var pressed = (message.data[2] == 127);
+    //Translate midi btn into index
+    var y = Math.floor(message.data[1] / 16);
+    var x = message.data[1] - y * 16;
+    if (y == 6 && x > 8) {
+        y = 8;
+        x -= 8;
+    }
+    if (y == 6 && x == 8 && message.data[0] == 176) {
+        y = 8; x = 0;
+    }
+
+    NLM.btns[NLM.page][x][y].pressed = pressed;
+    NLM.btns[NLM.page][x][y].callback();
+};
+
+NLM.drawPage = function () {
+    for (x = 0; x < 9; x++) {
+        for (y = 0; y < 9; y++) {
+            NLM.btns[NLM.page][x][y].draw();
+        }
+    }
+}
+
+
+
+
+

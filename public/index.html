@@ -38,7 +38,6 @@
         </div>
         <div class="row">
             <div class="col" id="deck1Controls"></div>
-            <div class="col" id="deck2Controls"></div>
         </div>
     </div>
 
@@ -47,39 +46,43 @@
 
     <script>
 
-        function loadPlaylist(player, listnum) {
-            document.getElementById('currentPlaylistLabel').textContent=playlists[listnum].name;
-            player.setPlaylist(playlists[listnum]);
-        }
 
 
         var buttonDefs = new Array();
 
         var deck1Player = new DeckPlayer('deck1');
         var deck2Player = new DeckPlayer('deck2');
+
+
+        var pausedPlayer = deck1Player;
+        var inUsePlayer = deck2Player;
+        pausedPlayer.volume=0;
+
+        function loadPlaylist(listnum) {
+            document.getElementById('currentPlaylistLabel').textContent=playlists[listnum].name;
+            pausedPlayer.setPlaylist(playlists[listnum]);
+            pausedPlayer.fadeIn();
+            inUsePlayer.fadeOut();
+            var temp = inUsePlayer;
+            inUsePlayer = pausedPlayer;
+            pausedPlayer = temp;
+            
+            
+        }
+
         playlists.forEach((element, index) => {
             var btn = document.createElement("BUTTON");        // Create a <button> element
             var t = document.createTextNode(element.name);       // Create a text node
             btn.appendChild(t);
             btn.classList.add("btn");
             btn.classList.add("btn-light");
-            btn.onclick = () => loadPlaylist(deck1Player, index);
+            btn.onclick = () => loadPlaylist(index);
 
             buttonDefs.push({ page: 0, x: index, y: 0, key: CallbackKey("hi_green", "hi_amber", btn.onclick) });
 
             document.getElementById('deck1Controls').appendChild(btn);
         });
-        playlists.forEach((element, index) => {
-            var btn = document.createElement("BUTTON");        // Create a <button> element
-            var t = document.createTextNode(element.name);       // Create a text node
-            btn.appendChild(t);
-            btn.classList.add("btn");
-            btn.classList.add("btn-light");
-            btn.onclick = () => loadPlaylist(deck2Player, index);                               // Append the text to <button>
-            buttonDefs.push({ page: 0, x: index, y: 1, key: CallbackKey("hi_green", "hi_amber", btn.onclick) });
 
-            document.getElementById('deck2Controls').appendChild(btn);
-        });
 
 
         function midiInit(midi) {

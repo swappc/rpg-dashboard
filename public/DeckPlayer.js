@@ -1,8 +1,8 @@
-function DeckPlayer(elementId) {
+function DeckPlayer() {
     var _this = this;
     this.playlist = [];
     this.currentSong = 0;
-    this.playerElement = document.getElementById(elementId);
+    this.playerElement = new Audio();
     this.loadTrack = function (trackNum) {
         _this.playerElement.src = _this.playlist[trackNum].file;
         document.getElementById('nowPlayingLabel').textContent = _this.playlist[trackNum].name;
@@ -59,5 +59,17 @@ function DeckPlayer(elementId) {
         var distance = this.playerElement.volume;
         var iterations = Math.ceil(distance / 0.01)
         this.fade(-.01, iterations);
+    }
+
+    this.setVolume = function(targetVolume){
+        this.playerElement.volume = targetVolume;
+    }
+
+    this.pause = function(){
+        this.playerElement.pause();
+    }
+
+    this.play = function (){
+        this.playerElement.play();
     }
 }

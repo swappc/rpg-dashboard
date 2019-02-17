@@ -32,12 +32,6 @@
             </div>
         </div>
         <div class="row">
-            <div class="col"> <audio id="deck1" controls autoplay>
-                </audio></div>
-            <div class="col"> <audio id="deck2" controls>
-                </audio></div>
-        </div>
-        <div class="row">
             <div class="col" id="playlistControls">
                 <button id="playPauseButton" onclick="player.togglePlay()" disabled>Play</button>
 
@@ -47,7 +41,9 @@
             </div>
         </div>
         <div class="row">
-            <div class="col" id="playlistsDiv"></div>
+            <div class="col">
+                <div id="playlistsDiv" class="btn-group btn-group-toggle" data-toggle="buttons"></div>
+            </div>
         </div>
     </div>
 
@@ -93,41 +89,69 @@
 
 
 
-
+        var playlistKeys = new Array();
+        var labelElems = new Array();
 
         playlists.forEach((element, index) => {
             function loadPlaylist(listnum) {
                 document.getElementById('currentPlaylistLabel').textContent = playlists[listnum].name;
                 player.setPlaylist(playlists[listnum]);
+                playlistKeys.forEach((e) => {
+                    e.setValue(listnum);
+                });
+                labelElems.forEach((e) => {
+                    if (e.playlistId === listnum) {
+                        e.classList.add("active");
+                    } else {
+                        e.classList.remove("active");
+                    }
+                })
+
             }
 
-
-            var btn = document.createElement("BUTTON");        // Create a <button> element
-            var t = document.createTextNode(element.name);       // Create a text node
-            btn.appendChild(t);
-            btn.classList.add("btn");
-            btn.classList.add("btn-light");
+            var label = document.createElement("LABEL");
+            label.classList.add("btn");
+            label.classList.add("btn-secondary");
+            label.playlistId = index;
+            label.innerHTML = element.name; 
+            var btn = document.createElement("INPUT");       // Create a <button> element
+            btn.type = "radio";
+            btn.name = "playlists";
             btn.onclick = () => loadPlaylist(index);
 
-            buttonDefs.push({ page: 0, x: 0, y: index, key: CallbackKey("hi_green", "hi_amber", btn.onclick) });
+            labelElems.push(label);
+            label.appendChild(btn);
 
-            document.getElementById('playlistsDiv').appendChild(btn);
+            var tempKey = GroupKey("playlists", index);
+            tempKey.onPushCallback = function (index) {
+                if (this.pos == index && this.active) {
+                    player.togglePlay();
+                } else {
+                    loadPlaylist(index)
+                }
+            }.bind(tempKey);
+            buttonDefs.push({
+                page: 0, x: 0, y: index, key: tempKey
+            });
+            playlistKeys.push(tempKey);
+
+            document.getElementById('playlistsDiv').appendChild(label);
         });
 
 
         var volumeKeys = new Array();
         // Volume Control
-        for(i = 0 ; i < 8 ; i++) {
-            var tempKey = SliderKey(0,i,(value)=>{
+        for (i = 0; i < 8; i++) {
+            var tempKey = SliderKey(0, i, (value) => {
                 player.setVolume(value);
             });
-            buttonDefs.push({page:0,x:7,y:7-i,key:tempKey});
+            buttonDefs.push({ page: 0, x: 7, y: 7 - i, key: tempKey });
             volumeKeys.push(tempKey);
         }
 
         player.onVolumeChange = function (targetVolume) {
             volumeSlider.value = targetVolume * 100;
-            volumeKeys.forEach((e)=>{
+            volumeKeys.forEach((e) => {
                 e.setValue(targetVolume);
             })
         }

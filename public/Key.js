@@ -148,9 +148,9 @@ function SliderKey(ch, pos, onPushCallback) {
     that.setled = function()
     {
         if (!this.active) {
-            this.setColor("hi_red");
+            this.setColor("lo_red");
         } else {
-            this.setColor("lo_green");
+            this.setColor("hi_green");
         }
     }
 
@@ -177,3 +177,41 @@ function SliderKey(ch, pos, onPushCallback) {
 }
 SliderKey.keys=new Array();
 SliderKey.positions = [0,.17,.335,0.5,0.625,0.75,0.875,1];
+
+function GroupKey(groupName, pos){
+    var that = new Key();
+
+    that.pos  = pos;
+    that.active=false;
+
+    that.setled = function()
+    {
+        if (this.active) {
+            this.setColor("mi_amber");
+        } else {
+            this.setColor("mi_green");
+        }
+    }
+
+    that.setValue = function(activePos){
+        this.active = activePos==this.pos;
+        this.setled();
+    }
+
+    that.onPush = function()
+    {
+        var targetValue = this.pos;
+        this.onPushCallback(targetValue);
+        GroupKey.keys[groupName].forEach(function(e) { 
+            e.setValue(targetValue);
+            e.setled();
+         });
+    }
+
+    that.setled();
+
+    if ( GroupKey.keys[groupName] == undefined ) GroupKey.keys[groupName] = new Array();
+    GroupKey.keys[groupName][pos] = that;
+    return that;
+}
+GroupKey.keys=new Array();

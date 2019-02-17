@@ -88,7 +88,7 @@ function PushKey(colordef, colorpush) {
     return that;
 }
 
-function CallbackKey(colordef, colorpush, callback){
+function CallbackKey(colordef, colorpush, callback) {
     var that = PushKey(colordef, colorpush);
 
     that.onPushOrig = that.onPush;
@@ -110,3 +110,70 @@ function PageSelectKey() {
     }
     return that;
 }
+
+function PlayKey(onPushCallback) {
+    var that = new Key();
+    that.playing = false;
+
+    that.setled = function () {
+        if (this.pressed) {
+            this.setColor("hi_amber");
+        } else if (this.playing) {
+            this.setColor("hi_green");
+        } else {
+            this.setColor("hi_yellow");
+        }
+    }
+
+    that.setled();
+
+    that.onPush = function () {
+        onPushCallback();
+        this.setled();
+    }
+
+    that.onRelease = function () {
+        this.setled();
+    }
+
+    return that;
+}
+
+function SliderKey(ch, pos, onPushCallback) {
+    var that = new Key();
+
+    that.pos  = SliderKey.positions[pos];
+    that.active=false;
+
+    that.setled = function()
+    {
+        if (!this.active) {
+            this.setColor("hi_red");
+        } else {
+            this.setColor("lo_green");
+        }
+    }
+
+    that.setValue = function(percentage){
+        this.active = percentage>=this.pos;
+        this.setled();
+    }
+
+    that.onPush = function()
+    {
+        var targetValue = this.pos;
+        onPushCallback(targetValue);
+        SliderKey.keys[ch].forEach(function(e) { 
+            e.setValue(targetValue);
+            e.setled();
+         });
+    }
+
+    that.setled();
+
+    if ( SliderKey.keys[ch] == undefined ) SliderKey.keys[ch] = new Array();
+    SliderKey.keys[ch][pos] = that;
+    return that;
+}
+SliderKey.keys=new Array();
+SliderKey.positions = [0,.17,.335,0.5,0.625,0.75,0.875,1];

@@ -39,7 +39,11 @@
         </div>
         <div class="row">
             <div class="col" id="playlistControls">
-                <button id="playPauseButton" onclick="player.play()">Play</button>
+                <button id="playPauseButton" onclick="player.togglePlay()" disabled>Play</button>
+
+                <input type="range" min="0" max="100" class="slider" id="volumeSlider" />
+                <button onclick="player.setVolume(.5)">50%</button>
+                <button onclick="player.setVolume(1)">100%</button>
             </div>
         </div>
         <div class="row">
@@ -57,6 +61,36 @@
         var buttonDefs = new Array();
 
         var player = new PlaylistPlayer();
+        var midiPlayKey = PlayKey(() => {
+            player.togglePlay();
+        });
+        buttonDefs.push({ page: 0, x: 0, y: 8, key: midiPlayKey });
+
+
+        player.onPlay = function () {
+            var element = document.getElementById("playPauseButton");
+            element.innerHTML = "Pause";
+            element.disabled = false;
+            midiPlayKey.playing = true;
+            midiPlayKey.setled();
+
+        }
+
+        player.onPause = function () {
+            var element = document.getElementById("playPauseButton");
+            element.innerHTML = "Play";
+            element.disabled = false;
+
+            midiPlayKey.playing = false;
+            midiPlayKey.setled();
+        }
+
+        var volumeSlider = document.getElementById("volumeSlider");
+        volumeSlider.oninput = function () {
+            player.setVolume(this.value / 100);
+        }
+
+
 
 
 
@@ -75,10 +109,30 @@
             btn.classList.add("btn-light");
             btn.onclick = () => loadPlaylist(index);
 
-            buttonDefs.push({ page: 0, x: index, y: 0, key: CallbackKey("hi_green", "hi_amber", btn.onclick) });
+            buttonDefs.push({ page: 0, x: 0, y: index, key: CallbackKey("hi_green", "hi_amber", btn.onclick) });
 
             document.getElementById('playlistsDiv').appendChild(btn);
         });
+
+
+        var volumeKeys = new Array();
+        // Volume Control
+        for(i = 0 ; i < 8 ; i++) {
+            var tempKey = SliderKey(0,i,(value)=>{
+                player.setVolume(value);
+            });
+            buttonDefs.push({page:0,x:7,y:7-i,key:tempKey});
+            volumeKeys.push(tempKey);
+        }
+
+        player.onVolumeChange = function (targetVolume) {
+            volumeSlider.value = targetVolume * 100;
+            volumeKeys.forEach((e)=>{
+                e.setValue(targetVolume);
+            })
+        }
+
+        player.setVolume(1);
 
 
 

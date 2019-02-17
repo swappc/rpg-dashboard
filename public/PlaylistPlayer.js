@@ -3,42 +3,64 @@ function PlaylistPlayer(controlsDiv) {
     this.players = [new DeckPlayer(), new DeckPlayer()];
     this.players[1].setVolume(0);
     var controlsDiv = document.getElementById('controlsDiv');
-    var onPauseCallbacks = [];
-    var onPlayCallbacks = [];
+    this.volume=1;
+
 
 
 
 
     this.setPlaylist = function (newPlaylist) {
-        var fadeOutPlayer = this.players[this.currentPlayer%2];
+        var fadeOutPlayer = this.getActivePlayer();
         this.currentPlayer+=1;
-        var fadeInPlayer = this.players[this.currentPlayer%2];
+        var fadeInPlayer = this.getActivePlayer();
         fadeInPlayer.setPlaylist(newPlaylist);
-        fadeInPlayer.fadeIn();
+        fadeInPlayer.fadeIn(this.volume);
         fadeOutPlayer.fadeOut();
-    }
-
-    this.pause = function(){
-        this.players[this.currentPlayer%2].pause();
-        this.onPause();
-    }
-
-    this.play = function(){
-        this.players[this.currentPlayer%2].play();
         this.onPlay();
     }
 
+    this.pause = function(){
+        this.getActivePlayer().pause();
+        this.onPause();
+    }.bind(this);
+
+    this.play = function(){
+        this.getActivePlayer().play();
+        this.onPlay();
+    }.bind(this);
+
+    this.togglePlay = function(){
+        var activePlayer = this.getActivePlayer();
+        if(activePlayer.isPlaying()){
+            this.pause();
+        }else{
+            this.play();
+        }
+    }.bind(this);
+
     this.onPause = function(){
-        this.onPauseCallbacks.forEach((element)=>{
-            element();
-        });
+
     }
 
     this.onPlay = function(){
-        this.onPlayCallbacks.forEach((element)=>{
-            element();
-        });
+
     }
+
+    this.getActivePlayer = function(){
+        return this.players[this.currentPlayer%2];
+    }
+
+    this.setVolume = function(targetVolume){
+        this.getActivePlayer().setVolume(targetVolume);
+        this.onVolumeChange(targetVolume);
+
+    }
+
+    this.onVolumeChange = function(newVolume){
+
+    }
+
+
 
 
 

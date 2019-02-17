@@ -72,4 +72,8 @@ function DeckPlayer() {
     this.play = function (){
         this.playerElement.play();
     }
+
+    this.isPlaying = function(){
+        return !this.playerElement.paused;
+    }
 }

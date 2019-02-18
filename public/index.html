@@ -167,7 +167,7 @@
             for (var input = inputs.next();
                 input && !input.done;
                 input = inputs.next()) {
-                if (input.value.name === 'Launchpad Mini MIDI 1') {
+                if (input.value.name === 'Launchpad Mini MIDI 1'||input.value.name==='Launchpad Mini') {
                     // each time there is a midi message call the onMIDIMessage function
                     input.value.onmidimessage = NLM.incomingData;
                     break;
@@ -178,7 +178,7 @@
             for (var output = outputs.next();
                 output && !output.done;
                 output = outputs.next()) {
-                if (output.value.name === 'Launchpad Mini MIDI 1') {
+                if (output.value.name === 'Launchpad Mini MIDI 1'||input.value.name==='Launchpad Mini') {
                     // each time there is a midi message call the onMIDIMessage function
                     console.log('Found output midi');
                     NLM.init(output.value, buttonDefs);

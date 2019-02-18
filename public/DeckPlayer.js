@@ -28,7 +28,7 @@ function DeckPlayer() {
         this.playlist = newPlaylist.files;
         this.loadTrack(0);
         this.playerElement.play();
-    }
+    }.bind(this);
 
     this.playerElement.onended = function () {
         _this.playNext();

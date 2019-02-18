@@ -26,7 +26,8 @@ function DeckPlayer() {
             this.playerElement.stop();
         }
         this.playlist = newPlaylist.files;
-        this.loadTrack(0);
+        var randomTrackNum = Math.floor((Math.random() * this.playlist.length))
+        this.loadTrack(randomTrackNum);
         this.playerElement.play();
     }.bind(this);
 
@@ -43,12 +44,12 @@ function DeckPlayer() {
 
     this.fade = function (stepSize, iterations) {
         var newVolume = this.playerElement.volume + stepSize;
-        if(newVolume>=1){
-            newVolume=1;
-            iterations=0;
-        } else if(newVolume<=0){
-            newVolume=0;
-            iterations=0;
+        if (newVolume >= 1) {
+            newVolume = 1;
+            iterations = 0;
+        } else if (newVolume <= 0) {
+            newVolume = 0;
+            iterations = 0;
         }
         this.playerElement.volume = newVolume;
         if (iterations > 0) {

@@ -34,24 +34,25 @@ function DeckPlayer() {
         _this.playNext();
     }
 
-    this.fadeIn = function () {
-        var distance = 1 - this.playerElement.volume;
+    this.fadeIn = function (targetVolume) {
+        var distance = targetVolume - this.playerElement.volume;
         var iterations = Math.ceil(distance / 0.01)
         this.playerElement.play();
         this.fade(.01, iterations);
     }
 
     this.fade = function (stepSize, iterations) {
-        if (iterations <= 1) {
-            if (stepSize < 0) {
-                this.playerElement.volume = 0;
-                this.playerElement.pause();
-            } else {
-                this.playerElement.volume = 1;
-            }
-        } else {
-            this.playerElement.volume += stepSize;
-            setTimeout(() => { this.fade(stepSize, iterations - 1) },10);
+        var newVolume = this.playerElement.volume + stepSize;
+        if(newVolume>=1){
+            newVolume=1;
+            iterations=0;
+        } else if(newVolume<=0){
+            newVolume=0;
+            iterations=0;
+        }
+        this.playerElement.volume = newVolume;
+        if (iterations > 0) {
+            setTimeout(() => { this.fade(stepSize, iterations - 1) }, 10);
         }
     }
 
@@ -61,19 +62,19 @@ function DeckPlayer() {
         this.fade(-.01, iterations);
     }
 
-    this.setVolume = function(targetVolume){
+    this.setVolume = function (targetVolume) {
         this.playerElement.volume = targetVolume;
     }
 
-    this.pause = function(){
+    this.pause = function () {
         this.playerElement.pause();
     }
 
-    this.play = function (){
+    this.play = function () {
         this.playerElement.play();
     }
 
-    this.isPlaying = function(){
+    this.isPlaying = function () {
         return !this.playerElement.paused;
     }
 }

@@ -22,7 +22,9 @@ colorCode = function () {
 
 
 //Define one Key
-Key = Object;
+function Key(){
+    
+}
 Key.prototype.color = colorCode()["black"];
 Key.prototype.x = -1;
 Key.prototype.y = -1;
@@ -139,7 +141,7 @@ function PlayKey(onPushCallback) {
     return that;
 }
 
-function SliderKey(ch, pos, onPushCallback) {
+function SliderKey(ch, pos) {
     var that = new Key();
 
     that.pos  = SliderKey.positions[pos];
@@ -162,11 +164,15 @@ function SliderKey(ch, pos, onPushCallback) {
     that.onPush = function()
     {
         var targetValue = this.pos;
-        onPushCallback(targetValue);
+        this.onPushCallback(targetValue);
         SliderKey.keys[ch].forEach(function(e) { 
             e.setValue(targetValue);
             e.setled();
          });
+    }
+
+    that.onPushCallback = function(value){
+
     }
 
     that.setled();

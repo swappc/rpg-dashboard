@@ -1,0 +1,22 @@
+{
+  "name": "rpg-dashboard",
+  "version": "1.0.0",
+  "description": "This is a rpg-dashboard app. It can control things like playing music, effects, handling initiative, etc.",
+  "main": "server.js",
+  "author": "LostPhoenix",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thattolleyguy/rpg-dashboard.git"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/thattolleyguy/rpg-dashboard/issues"
+  },
+  "homepage": "https://github.com/thattolleyguy/rpg-dashboard#readme",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}

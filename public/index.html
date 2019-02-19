@@ -116,7 +116,7 @@
             label.classList.add("btn");
             label.classList.add("btn-secondary");
             label.playlistId = index;
-            label.innerHTML = element.name; 
+            label.innerHTML = element.name;
             var btn = document.createElement("INPUT");       // Create a <button> element
             btn.type = "radio";
             btn.name = "playlists";
@@ -146,7 +146,7 @@
         // Volume Control
         for (i = 0; i < 8; i++) {
             var tempKey = SliderKey(0, i);
-            tempKey.onPushCallback=function(value){
+            tempKey.onPushCallback = function (value) {
                 player.setVolume(value);
             };
             buttonDefs.push({ page: 0, x: 3, y: 7 - i, key: tempKey });
@@ -194,7 +194,7 @@
             for (var input = inputs.next();
                 input && !input.done;
                 input = inputs.next()) {
-                if (input.value.name === 'Launchpad Mini MIDI 1'||input.value.name==='Launchpad Mini') {
+                if (input.value.name.startsWith('Launchpad Mini')) {
                     // each time there is a midi message call the onMIDIMessage function
                     input.value.onmidimessage = NLM.incomingData;
                     break;
@@ -205,7 +205,7 @@
             for (var output = outputs.next();
                 output && !output.done;
                 output = outputs.next()) {
-                if (output.value.name === 'Launchpad Mini MIDI 1'||input.value.name==='Launchpad Mini') {
+                if (output.value.name.startsWith('Launchpad Mini')) {
                     // each time there is a midi message call the onMIDIMessage function
                     console.log('Found output midi');
                     NLM.init(output.value, buttonDefs);

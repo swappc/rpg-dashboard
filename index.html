@@ -5,6 +5,7 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
     <script src="./scripts/DeckPlayer.js"></script>
     <script src="./scripts/PlaylistPlayer.js"></script>
     <script src="./scripts/Key.js"></script>
@@ -143,11 +144,10 @@
             });
 
         }
+        const { ipcRenderer } = require('electron');
+        
 
-
-
-        $.get("http://127.0.0.1:3000/playlists", "", processPlaylists);
-
+        processPlaylists(ipcRenderer.sendSync('load-playlist'));
         var volumeKeys = new Array();
         // Volume Control
         for (i = 0; i < 8; i++) {

@@ -5,10 +5,6 @@ function PlaylistPlayer(controlsDiv) {
     var controlsDiv = document.getElementById('controlsDiv');
     this.volume=1;
 
-
-
-
-
     this.setPlaylist = function (newPlaylist) {
         var fadeOutPlayer = this.getActivePlayer();
         this.currentPlayer+=1;

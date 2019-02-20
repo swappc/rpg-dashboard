@@ -1,29 +1,23 @@
 {
   "name": "rpg-dashboard",
   "version": "1.0.0",
-  "description": "Dashboard for your rpg sessions",
-  "main": "main.js",
+  "description": "This is a rpg-dashboard app. It can control things like playing music, effects, handling initiative, etc.",
+  "main": "server.js",
+  "author": "LostPhoenix",
   "scripts": {
-    "start": "electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/thattolleyguy/rpg-dashboard.git"
   },
-  "author": "LostPhoenix",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/thattolleyguy/rpg-dashboard/issues"
   },
   "homepage": "https://github.com/thattolleyguy/rpg-dashboard#readme",
-  "devDependencies": {
-    "electron": "^4.0.5",
-    "electron-rebuild": "^1.8.4"
-  },
   "dependencies": {
-    "dataurl": "^0.1.0",
-    "electron-audio-conversion": "^0.1.0",
-    "sqlite": "^3.0.2"
+    "express": "^4.16.4",
+    "sqlite3": "^4.0.6"
   }
 }

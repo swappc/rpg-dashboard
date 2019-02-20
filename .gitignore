@@ -2,3 +2,4 @@ public/music/*
 node_modules/*
 *.db
 music/*
+old/node_modules/*

@@ -51,6 +51,7 @@ function PlaylistPlayer(controlsDiv) {
     }
 
     this.setVolume = function(targetVolume){
+        this.getActivePlayer.targetVolume
         this.getActivePlayer().setVolume(targetVolume);
         this.volume = targetVolume;
         this.onVolumeChange(targetVolume);

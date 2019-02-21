@@ -231,6 +231,10 @@
             {
                 "name": "37 - Out of the Cold.mp3",
                 "file": "music/Skyrim/37 - Out of the Cold.mp3"
+            },
+            {
+                "name": "Pippin the Hunchback.mp3",
+                "file": "music/Pippin the Hunchback.mp3"
             }
         ]
     },

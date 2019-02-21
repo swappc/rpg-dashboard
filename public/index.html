@@ -13,38 +13,77 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
         integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 
-    <title>Hello, world!</title>
+    <title>RPG Audio Dashboard</title>
 </head>
 
 <body>
-    <h1>RPG Dashboard
-    </h1>
-    <div class="container">
-        <div class="row">
-            <div class="col">
-                Playlist:
-                <label id="currentPlaylistLabel"></label>
-            </div>
-            <div class="col">
-                Now playing:
-                <label id="nowPlayingLabel"></label>
+    <div style="text-align:center;border:3px solid #007bff">
+    <h1>RPG Dashboard</h1>
+    </div>
+    <div class="row">
+        <div class="col-2">
+            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                <a class="nav-link active" id="v-pills-dash-tab" data-toggle="pill" href="#v-pills-dash" role="tab"
+                    aria-controls="v-pills-dash" aria-selected="true">Dashboard</a>
+                <a class="nav-link" id="v-pills-playist-tab" data-toggle="pill" href="#v-pills-playist" role="tab"
+                    aria-controls="v-pills-playist" aria-selected="false">Playist Manager</a>
             </div>
         </div>
-        <div class="row">
-            <div class="col" id="playlistControls">
-                <button id="playPauseButton" onclick="player.togglePlay()" disabled>Play</button>
+        <div class="col-10">
+            <div class="tab-content" id="v-pills-tabContent">
+                <div class="tab-pane fade show active" id="v-pills-dash" role="tabpanel"
+                    aria-labelledby="v-pills-dash-tab">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col">
+                                Playlist:
+                                <label id="currentPlaylistLabel"></label>
+                            </div>
+                            <div class="col">
+                                Now playing:
+                                <label id="nowPlayingLabel"></label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col" id="playlistControls">
+                                <button id="playPauseButton" onclick="player.togglePlay()" disabled>Play</button>
 
-                <input type="range" min="0" max="100" class="slider" id="volumeSlider" />
-                <button onclick="player.setVolume(.5)">50%</button>
-                <button onclick="player.setVolume(1)">100%</button>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <div id="playlistsDiv" class="btn-group btn-group-toggle" data-toggle="buttons"></div>
+                                <input type="range" min="0" max="100" class="slider" id="volumeSlider" />
+                                <button onclick="player.setVolume(.5)">50%</button>
+                                <button onclick="player.setVolume(1)">100%</button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div id="playlistsDiv" class="btn-group btn-group-toggle" data-toggle="buttons"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="v-pills-playist" role="tabpanel" aria-labelledby="v-pills-playist-tab">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col">
+                                <h2>Playlists</h2>
+                            </div>
+                            <div class="col">
+                                <h2>Songs in Playist</h2>
+                            </div>
+                            <div class="col">
+                                <div class="row">
+                                    <h2>Songs In Library</h2>
+                                </div>
+                                <div class="row">
+                                    more
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
 
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -54,6 +93,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
         integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
         crossorigin="anonymous"></script>
+        <script src="scripts/playlist_manager/playlistManager.js"></script>
     <script>
 
 
@@ -147,6 +187,8 @@
 
 
         $.get("http://127.0.0.1:3000/playlists", "", processPlaylists);
+
+        //$.get("http://127.0.0.1:3000/library", "", processLibrary);
 
         var volumeKeys = new Array();
         // Volume Control

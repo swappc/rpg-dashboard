@@ -57,21 +57,6 @@ function DeckPlayer() {
         }
     }
 
-    this.fadeInSteps = function (stepSize, iterations, milliseconds) {
-        var newVolume = this.playerElement.volume + stepSize;
-        if (newVolume >= 1) {
-            newVolume = 1;
-            iterations = 0;
-        } else if (newVolume <= 0) {
-            newVolume = 0;
-            iterations = 0;
-        }
-        this.playerElement.volume = newVolume;
-        if (iterations > 0) {
-            setTimeout(() => { this.fade(stepSize, iterations - 1) }, milliseconds);
-        }
-    }
-
     this.fadeOut = function () {
         var distance = this.playerElement.volume;
         var iterations = Math.ceil(distance / 0.01)

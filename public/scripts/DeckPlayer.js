@@ -65,7 +65,6 @@ function DeckPlayer() {
 
     this.setVolume = function (targetVolume) {
         var step = targetVolume > this.playerElement.volume ? .01 : -.01;
-        //this.playerElement.volume = targetVolume;
         this.setVolumeInSteps(targetVolume, step);
     }
 

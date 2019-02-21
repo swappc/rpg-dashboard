@@ -18,6 +18,8 @@
   "homepage": "https://github.com/thattolleyguy/rpg-dashboard#readme",
   "dependencies": {
     "express": "^4.16.4",
+    "minimist": "^1.2.0",
+    "path": "^0.12.7",
     "sqlite3": "^4.0.6"
   }
 }

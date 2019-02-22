@@ -76,5 +76,8 @@ PlaylistPlayer.prototype = {
 
     progressUpdate: function (percentage) {
 
+    },
+    setPosition: function (percentage) {
+        this.getActivePlayer().setPosition(percentage);
     }
 }

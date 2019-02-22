@@ -63,9 +63,7 @@ db.serialize(() => {
                 db.run('INSERT INTO playlist_tracks(playlistId, trackId) VALUES (?,?)', [index, row.rowid]);
               }
             })
-
           })
-
         });
       });
     }

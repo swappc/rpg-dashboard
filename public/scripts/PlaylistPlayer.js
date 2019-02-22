@@ -17,7 +17,7 @@ function PlaylistPlayer(controlsDiv) {
         fadeInPlayer.fadeIn(this.volume);
         fadeOutPlayer.fadeOut();
         this.onPlay();
-    }
+    }.bind(this);
 
     this.pause = function(){
         this.getActivePlayer().pause();
@@ -48,7 +48,7 @@ function PlaylistPlayer(controlsDiv) {
 
     this.getActivePlayer = function(){
         return this.players[this.currentPlayer%2];
-    }
+    }.bind(this);
 
     this.setVolume = function(targetVolume){
         this.getActivePlayer().setVolume(targetVolume);

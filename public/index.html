@@ -18,7 +18,7 @@
 
 <body>
     <div style="text-align:center;border:3px solid #007bff">
-    <h1>RPG Dashboard</h1>
+        <h1>RPG Dashboard</h1>
     </div>
     <div class="row">
         <div class="col-2">
@@ -46,11 +46,16 @@
                         </div>
                         <div class="row">
                             <div class="col" id="playlistControls">
-                                <button id="playPauseButton" onclick="player.togglePlay()" disabled>Play</button>
-
+                                <button class="btn btn-primary" id="playPauseButton" onclick="player.togglePlay()"
+                                    disabled>Play</button>
+                                <div class="progress">
+                                    <div id="playingProgress" class="progress-bar" role="progressbar" aria-valuenow="0"
+                                        aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
                                 <input type="range" min="0" max="100" class="slider" id="volumeSlider" />
-                                <button onclick="player.setVolume(.5)">50%</button>
-                                <button onclick="player.setVolume(1)">100%</button>
+
+                                <button class="btn btn-primary" onclick="player.setVolume(.5)">50%</button>
+                                <button class="btn btn-primary" onclick="player.setVolume(1)">100%</button>
                             </div>
                         </div>
                         <div class="row">
@@ -93,7 +98,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
         integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
         crossorigin="anonymous"></script>
-        <script src="scripts/playlist_manager/playlistManager.js"></script>
+    <script src="scripts/playlist_manager/playlistManager.js"></script>
     <script>
 
 
@@ -101,6 +106,10 @@
         var buttonDefs = new Array();
 
         var player = new PlaylistPlayer();
+        player.progressUpdate = function(percentage){
+            var progressElement = document.getElementById('playingProgress');
+            progressElement.setAttribute('style', 'width: '+Math.floor(percentage*100)+'%');
+        }
         var midiPlayKey = PlayKey(() => {
             player.togglePlay();
         });

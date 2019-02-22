@@ -8,6 +8,10 @@ function DeckPlayer() {
     this.playerElement.onended = function () {
         this.playNext();
     }.bind(this);
+
+    this.playerElement.ontimeupdate = function(event){
+        this.timeUpdate(this.playerElement.currentTime, this.playerElement.duration);
+    }.bind(this);
 }
 
 DeckPlayer.prototype = {
@@ -98,6 +102,10 @@ DeckPlayer.prototype = {
 
     isPlaying: function () {
         return !this.playerElement.paused;
+    },
+    timeUpdate: function(currentTime, duration){
+        
     }
+    
 
 }

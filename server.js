@@ -53,16 +53,19 @@ db.serialize(() => {
       fs.readFile('playlists.json', 'utf8', function (err, contents) {
         JSON.parse(contents).forEach((playlist, index) => {
           db.run('INSERT INTO playlists(id, name) VALUES (?,?)', [index, playlist.name]);
-          playlist.files.forEach((track) => {
-            db.get('SELECT rowid FROM library_tracks WHERE trackName = ?', [track.name], (err, row) => {
-              if (row) {
-                if(!row.rowid)
-                {
-                  console.log('No rowid for track:'+track.name);
-                }
-                db.run('INSERT INTO playlist_tracks(playlistId, trackId) VALUES (?,?)', [index, row.rowid]);
-              }
-            })
+          var playlistFiles = playlist.files.map((track) => track.name);
+          var placeholders = '(' + playlist.files.map(() => '?').join(',') + ')';
+
+          db.all('SELECT rowid FROM library_tracks WHERE trackName in ' + placeholders, playlistFiles, (err, rows) => {
+            if (rows) {
+              var insertValues = [];
+              rows.forEach((row) => {
+                insertValues.push(index);
+                insertValues.push(row.rowid);
+              })
+              var insertPlaceholders = rows.map(()=>'(?,?)').join(',');
+              db.run('INSERT INTO playlist_tracks(playlistId, trackId) VALUES ' + insertPlaceholders, insertValues);
+            }
           })
         });
       });

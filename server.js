@@ -119,6 +119,25 @@ app.get('/playlists', (request, response) => {
     })
 });
 
+app.get('/library', (request, response) => {
+
+  db.all(
+    "SELECT lt.trackName, lt.trackFile \
+  FROM library_tracks lt \
+  order by lt.trackName", [], (err, rows) => {
+
+      var retVal = [];
+      rows.forEach((row) => {
+        var track = {};
+        track.name = row.trackName;
+        track.file = row.trackFile;
+        retVal.push(track);
+      })
+
+      response.json(200, retVal);
+
+    })
+});
 
 app.listen(port, (err) => {
   if (err) {

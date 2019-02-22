@@ -45,13 +45,18 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col" id="playlistControls">
+                            <div class="col-1">
                                 <button class="btn btn-primary" id="playPauseButton" onclick="player.togglePlay()"
                                     disabled>Play</button>
+                            </div>
+                            <div class="col-5">
                                 <div class="progress">
                                     <div id="playingProgress" class="progress-bar" role="progressbar" aria-valuenow="0"
                                         aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
+
+                            </div>
+                            <div class="col-6">
                                 <input type="range" min="0" max="100" class="slider" id="volumeSlider" />
 
                                 <button class="btn btn-primary" onclick="player.setVolume(.5)">50%</button>
@@ -106,9 +111,9 @@
         var buttonDefs = new Array();
 
         var player = new PlaylistPlayer();
-        player.progressUpdate = function(percentage){
+        player.progressUpdate = function (percentage) {
             var progressElement = document.getElementById('playingProgress');
-            progressElement.setAttribute('style', 'width: '+Math.floor(percentage*100)+'%');
+            progressElement.setAttribute('style', 'width: ' + Math.floor(percentage * 100) + '%');
         }
         var midiPlayKey = PlayKey(() => {
             player.togglePlay();

@@ -56,7 +56,7 @@ PlaylistPlayer.prototype = {
         return this.players[this.currentPlayer % 2];
     },
 
-    this.setVolume = function(targetVolume){
+    setVolume: function(targetVolume){
         this.getActivePlayer().fadeToTarget(targetVolume);
         this.volume = targetVolume;
         this.onVolumeChange(targetVolume);

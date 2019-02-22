@@ -14,64 +14,66 @@ let db = new sqlite3.Database('./db/playlists.db', (err) => {
   console.log('Connected to playlists db');
 });
 
-function processDirectory(directory) {
+if (args['dbinit']) {
+  function processDirectory(directory) {
 
-  var listings = fs.readdirSync(directory);
-  listings.forEach((obj) => {
-    var fsStats = fs.statSync(directory + '/' + obj);
-    if (fsStats.isFile()) {
-      var fileName = path.parse(obj).base;
-      db.run('INSERT INTO library_tracks(trackName, trackFile) VALUES (?,?)', [fileName, directory + '/' + obj]);
-    } else if (fsStats.isDirectory()) {
-      processDirectory(directory + '/' + obj);
-    }
-  })
-}
-
-db.serialize(() => {
-  db.run('CREATE TABLE IF NOT EXISTS playlists (id INTEGER PRIMARY KEY, name TEXT NOT NULL)')
-    .run('CREATE TABLE IF NOT EXISTS playlist_tracks (trackId INTEGER NOT NULL, playlistId INTEGER NOT NULL)')
-    .run('CREATE TABLE IF NOT EXISTS library (folder TEXT NOT NULL)')
-    .run('CREATE TABLE IF NOT EXISTS library_tracks(trackName TEXT NOT NULL, trackFile TEXT NOT NULL)');
-
-
-
-  if (args['library']) {
-    db.run('DELETE FROM library')
-      .run("INSERT INTO library(folder) VALUES (?)", [args['library']]);
+    var listings = fs.readdirSync(directory);
+    listings.forEach((obj) => {
+      var fsStats = fs.statSync(directory + '/' + obj);
+      if (fsStats.isFile()) {
+        var fileName = path.parse(obj).base;
+        db.run('INSERT INTO library_tracks(trackName, trackFile) VALUES (?,?)', [fileName, directory + '/' + obj]);
+      } else if (fsStats.isDirectory()) {
+        processDirectory(directory + '/' + obj);
+      }
+    })
   }
 
-  db.all('SELECT * FROM library', [], (err, rows) => {
-    rows.forEach((row) => {
-      processDirectory(row.folder);
-    })
-  });
+  db.serialize(() => {
+    db.run('CREATE TABLE IF NOT EXISTS playlists (id INTEGER PRIMARY KEY, name TEXT NOT NULL)')
+      .run('CREATE TABLE IF NOT EXISTS playlist_tracks (trackId INTEGER NOT NULL, playlistId INTEGER NOT NULL)')
+      .run('CREATE TABLE IF NOT EXISTS library (folder TEXT NOT NULL)')
+      .run('CREATE TABLE IF NOT EXISTS library_tracks(trackName TEXT NOT NULL, trackFile TEXT NOT NULL)');
 
-  db.get('SELECT * FROM playlist_tracks', [], (err, row) => {
-    if (!row) {
-      db.run('DELETE FROM playlists');
-      fs.readFile('playlists.json', 'utf8', function (err, contents) {
-        JSON.parse(contents).forEach((playlist, index) => {
-          db.run('INSERT INTO playlists(id, name) VALUES (?,?)', [index, playlist.name]);
-          var playlistFiles = playlist.files.map((track) => track.name);
-          var placeholders = '(' + playlist.files.map(() => '?').join(',') + ')';
 
-          db.all('SELECT rowid FROM library_tracks WHERE trackName in ' + placeholders, playlistFiles, (err, rows) => {
-            if (rows) {
-              var insertValues = [];
-              rows.forEach((row) => {
-                insertValues.push(index);
-                insertValues.push(row.rowid);
-              })
-              var insertPlaceholders = rows.map(()=>'(?,?)').join(',');
-              db.run('INSERT INTO playlist_tracks(playlistId, trackId) VALUES ' + insertPlaceholders, insertValues);
-            }
-          })
-        });
-      });
+
+    if (args['library']) {
+      db.run('DELETE FROM library')
+        .run("INSERT INTO library(folder) VALUES (?)", [args['library']]);
     }
+
+    db.all('SELECT * FROM library', [], (err, rows) => {
+      rows.forEach((row) => {
+        processDirectory(row.folder);
+      })
+    });
+
+    db.get('SELECT * FROM playlist_tracks', [], (err, row) => {
+      if (!row) {
+        db.run('DELETE FROM playlists');
+        fs.readFile('playlists.json', 'utf8', function (err, contents) {
+          JSON.parse(contents).forEach((playlist, index) => {
+            db.run('INSERT INTO playlists(id, name) VALUES (?,?)', [index, playlist.name]);
+            var playlistFiles = playlist.files.map((track) => track.name);
+            var placeholders = '(' + playlist.files.map(() => '?').join(',') + ')';
+
+            db.all('SELECT rowid FROM library_tracks WHERE trackName in ' + placeholders, playlistFiles, (err, rows) => {
+              if (rows) {
+                var insertValues = [];
+                rows.forEach((row) => {
+                  insertValues.push(index);
+                  insertValues.push(row.rowid);
+                })
+                var insertPlaceholders = rows.map(() => '(?,?)').join(',');
+                db.run('INSERT INTO playlist_tracks(playlistId, trackId) VALUES ' + insertPlaceholders, insertValues);
+              }
+            })
+          });
+        });
+      }
+    })
   })
-})
+}
 
 
 app.get('/', (request, response) => {

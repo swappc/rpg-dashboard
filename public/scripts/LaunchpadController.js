@@ -1,6 +1,6 @@
 NLM = Object;
 
-NLM.init = function (device, buttonDefs) {
+NLM.init = function () {
     NLM.page = 0;
     console.log('MIDI initialized!');
 
@@ -15,28 +15,19 @@ NLM.init = function (device, buttonDefs) {
                 if (x == 8) {
                     tmp = PageSelectKey();
                 }
-                NLM.setupBtn(page, x, y, device, tmp);
+                NLM.setupBtn(page, x, y, tmp);
             }
         }
     }
 
-    buttonDefs.forEach(element => {
-        NLM.setupBtn(element.page,element.x,element.y,device,element.key);
-    });
-    // NLM.setupBtn(0, 0, 0, device, new PushKey("hi_green", "hi_amber"));
-
-    // NLM.setupBtn(1, 0, 1, device, new PushKey("hi_green", "hi_amber"));
-
     //Set default page led
     NLM.btns[NLM.page][8][0].setColor("hi_amber");
-
-
     this.drawPage();
 };
 
-NLM.setupBtn = function (page, x, y, device, btn) {
+NLM.setupBtn = function (page, x, y, btn) {
     NLM.btns[page][x][y] = btn;
-    NLM.btns[page][x][y].init(page, x, y, device);
+    NLM.btns[page][x][y].init(page, x, y, NLM);
 }
 
 NLM.incomingData = function (message) {
@@ -63,6 +54,10 @@ NLM.drawPage = function () {
             NLM.btns[NLM.page][x][y].draw();
         }
     }
+}
+
+NLM.sendToDevice = function(data){
+
 }
 
 

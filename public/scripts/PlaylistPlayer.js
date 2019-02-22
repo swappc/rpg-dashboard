@@ -51,7 +51,7 @@ function PlaylistPlayer(controlsDiv) {
     }.bind(this);
 
     this.setVolume = function(targetVolume){
-        this.getActivePlayer().setVolume(targetVolume);
+        this.getActivePlayer().fadeToTarget(targetVolume);
         this.volume = targetVolume;
         this.onVolumeChange(targetVolume);
 

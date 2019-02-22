@@ -2,10 +2,12 @@ function DeckPlayer() {
     this.playlist = [];
     this.currentSong = 0;
     this.playerElement = new Audio();
+    this.volume = 1;
+    this.timer = null;
 
     this.playerElement.onended = function () {
         this.playNext();
-    }
+    }.bind(this);
 }
 
 DeckPlayer.prototype = {
@@ -45,44 +47,47 @@ DeckPlayer.prototype = {
         this.playerElement.play();
     },
     fadeIn: function (targetVolume) {
-        var distance = targetVolume - this.playerElement.volume;
-        var iterations = Math.ceil(distance / 0.01)
         this.playerElement.play();
-        this.fade(.01, iterations);
+        this.fadeToTarget(targetVolume);
     },
-    fade: function (stepSize, iterations) {
+    fadeToTarget: function (targetVolume) {
+        if (this.timer != null) {
+          clearTimeout(this.timer);
+        }
+        this.volume = targetVolume;
+        this.fadeToVolume();
+    },
+    fadeToVolume: function () {
+        if (this.volume == this.playerElement.volume) {
+            return;
+        }
+
+        var stepSize = this.volume > this.playerElement.volume ? .01 : -.01;
         var newVolume = this.playerElement.volume + stepSize;
+        if ((stepSize < 0 && this.volume > newVolume) ||
+            (stepSize > 0 && this.volume < newVolume)) {
+            newVolume = this.volume;
+        }
         if (newVolume >= 1) {
             newVolume = 1;
-            iterations = 0;
+            this.volume = 1;
         } else if (newVolume <= 0) {
             newVolume = 0;
-            iterations = 0;
+            this.volume = 0;
         }
-        this.playerElement.volume = newVolume;
-        if (iterations > 0) {
-            setTimeout(() => { this.fade(stepSize, iterations - 1) }, 10);
+        this.playerElement.volume = newVolume
+        if (this.volume != this.playerElement.volume) {
+            this.timer = setTimeout(() => { this.fadeToVolume() }, 10);
         }
+
     },
     fadeOut: function () {
-        var distance = this.playerElement.volume;
-        var iterations = Math.ceil(distance / 0.01)
-        this.fade(-.01, iterations);
+        console.log("Fading out Volume at: " + this.playerElement.volume);
+        this.fadeToTarget(0);
     },
     setVolume: function (targetVolume) {
         this.playerElement.volume = targetVolume;
-
-        // var step = targetVolume > this.playerElement.volume ? .01 : -.01;
-        // this.setVolumeInSteps(targetVolume, step);
     },
-    setVolumeInSteps: function (targetVolume, stepSize) {
-        this.playerElement.volume = this.playerElement.volume + stepSize;
-        if ((stepSize > 0 && this.playerElement.volume < targetVolume) ||
-            (stepSize < 0 && this.playerElement.volume > targetVolume)) {
-            setTimeout(() => { this.setVolumeInSteps(targetVolume, stepSize) }, 10);
-        }
-    },
-
     pause: function () {
         this.playerElement.pause();
     },

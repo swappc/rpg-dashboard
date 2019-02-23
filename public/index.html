@@ -98,9 +98,24 @@
                         <div class="row">
                             <div class="col-3">
                                 <h2>Library</h2>
+                                <div class="form-group">
+                                    <label for="searchInput">Search</label>
+                                    <input class="form-control" id="searchInput">
+                                </div>
                             </div>
-                            <div class="col-9">
+                            <div class="col-9">Samplers</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <ul class="list-group" id="filteredTracksList">
 
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="col-9">
+                                <div class="container" id="samplerTargets"></div>
                             </div>
 
                         </div>
@@ -122,6 +137,79 @@
         crossorigin="anonymous"></script>
     <script src="scripts/playlist_manager/playlistManager.js"></script>
     <script>
+        function initSamplerPage() {
+
+            $.get("http://127.0.0.1:3000/library", "", (tracks) => {
+
+                var searchElem = document.getElementById('searchInput');
+                var listElem = document.getElementById('filteredTracksList');
+                searchElem.oninput = function () {
+                    while (listElem.firstChild) {
+                        listElem.removeChild(listElem.firstChild);
+                    }
+                    var searchValue = searchElem.value;
+                    var filtered = tracks.filter((track) => track.trackName.includes(searchValue)).slice(0, 15).map((track) => {
+                        var listItemElement = document.createElement('li');
+                        listItemElement.classList.add('list-group-item');
+                        listItemElement.innerText = track.trackName;
+                        listItemElement.ondragstart = dragtest;
+                        listItemElement.draggable = true;
+                        listItemElement.src = track.trackFile;
+                        listElem.appendChild(listItemElement);
+                    })
+
+
+                };
+
+            });
+
+            function dragtest(ev) {
+                ev.dataTransfer.setData("text", ev.target.innerText);
+                ev.dataTransfer.setData("src", ev.target.src);
+            }
+
+            function allowDrop(ev) {
+                ev.preventDefault();
+            }
+
+            function dropTrack(ev) {
+                ev.preventDefault();
+                var data = ev.dataTransfer.getData("text");
+                ev.target.innerText=data;
+                ev.target.src= ev.dataTransfer.getData("src");
+            }
+
+            var samplerContainer = document.getElementById('samplerTargets');
+
+            for (row = 0; row < 8; row++) {
+                var rowElement = document.createElement('DIV');
+                rowElement.classList.add('row');
+                for (col = 0; col < 4; col++) {
+                    var colElement = document.createElement('DIV');
+                    colElement.classList.add('col');
+
+                    var button = document.createElement('BUTTON');
+                    button.classList.add('btn');
+                    button.classList.add('btn-default');
+                    button.innerText = '___';
+                    button.ondrop = dropTrack;
+                    button.ondragover = allowDrop;
+                    button.onclick= function(){
+                        if(this.src){
+                            var audio = new Audio();
+                            audio.src = this.src;
+                            audio.play();
+                        }
+                    }
+                    colElement.appendChild(button);
+                    rowElement.appendChild(colElement);
+                }
+                samplerContainer.appendChild(rowElement);
+            }
+
+        }
+        initSamplerPage();
+
         NLM.init();
 
 
@@ -162,8 +250,8 @@
         volumeSlider.oninput = function () {
             player.setVolume(this.value / 100);
         }
-        document.getElementById("playingProgress").oninput = function(){
-            player.setPosition(this.value/100);
+        document.getElementById("playingProgress").oninput = function () {
+            player.setPosition(this.value / 100);
         }
 
 
@@ -213,6 +301,7 @@
                 playlistKeys.push(tempKey);
 
                 document.getElementById('playlistsDiv').appendChild(label);
+
             });
 
         }

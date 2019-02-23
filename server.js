@@ -119,6 +119,12 @@ app.get('/playlists', (request, response) => {
     })
 });
 
+app.get('/library', (request, response)=>{
+  db.all("SELECT * FROM library_tracks",[], (err, rows)=>{
+    response.json(200, rows);
+  })
+})
+
 
 app.listen(port, (err) => {
   if (err) {

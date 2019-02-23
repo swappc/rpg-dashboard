@@ -9,7 +9,7 @@ function DeckPlayer() {
         this.playNext();
     }.bind(this);
 
-    this.playerElement.ontimeupdate = function(event){
+    this.playerElement.ontimeupdate = function (event) {
         this.timeUpdate(this.playerElement.currentTime, this.playerElement.duration);
     }.bind(this);
 }
@@ -56,7 +56,7 @@ DeckPlayer.prototype = {
     },
     fadeToTarget: function (targetVolume) {
         if (this.timer != null) {
-          clearTimeout(this.timer);
+            clearTimeout(this.timer);
         }
         this.volume = targetVolume;
         this.fadeToVolume();
@@ -103,9 +103,13 @@ DeckPlayer.prototype = {
     isPlaying: function () {
         return !this.playerElement.paused;
     },
-    timeUpdate: function(currentTime, duration){
-        
+    timeUpdate: function (currentTime, duration) {
+
+    },
+    setPosition: function (percentage) {
+        this.playerElement.currentTime = this.playerElement.duration * percentage;
     }
-    
+
+
 
 }

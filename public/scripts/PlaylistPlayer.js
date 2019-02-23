@@ -12,12 +12,12 @@ PlaylistPlayer.prototype = {
 
 
         var fadeOutPlayer = this.getActivePlayer();
-        fadeOutPlayer.timeUpdate = function(currentTime, duration){
+        fadeOutPlayer.timeUpdate = function (currentTime, duration) {
         }
         this.currentPlayer += 1;
         var fadeInPlayer = this.getActivePlayer();
-        fadeInPlayer.timeUpdate = function(currentTime, duration){
-            this.progressUpdate(currentTime/duration);
+        fadeInPlayer.timeUpdate = function (currentTime, duration) {
+            this.progressUpdate(currentTime / duration);
         }.bind(this);
         fadeInPlayer.setPlaylist(newPlaylist);
         fadeInPlayer.fadeIn(this.volume);
@@ -33,6 +33,13 @@ PlaylistPlayer.prototype = {
     play: function () {
         this.getActivePlayer().play();
         this.onPlay();
+    },
+
+    next: function () {
+        this.getActivePlayer().playNext();
+    },
+    previous: function () {
+        this.getActivePlayer().playPrevious();
     },
 
     togglePlay: function () {
@@ -56,7 +63,7 @@ PlaylistPlayer.prototype = {
         return this.players[this.currentPlayer % 2];
     },
 
-    setVolume: function(targetVolume){
+    setVolume: function (targetVolume) {
         this.getActivePlayer().fadeToTarget(targetVolume);
         this.volume = targetVolume;
         this.onVolumeChange(targetVolume);
@@ -67,7 +74,10 @@ PlaylistPlayer.prototype = {
 
     },
 
-    progressUpdate: function(percentage){
+    progressUpdate: function (percentage) {
 
+    },
+    setPosition: function (percentage) {
+        this.getActivePlayer().setPosition(percentage);
     }
 }

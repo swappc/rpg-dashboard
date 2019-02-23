@@ -31,12 +31,11 @@ Key.prototype.y = -1;
 Key.prototype.page = -1;
 Key.prototype.pressed = false;
 
-Key.prototype.init = function (page, x, y, midi) {
+Key.prototype.init = function (page, x, y) {
     this.x = x;
     this.y = y;
     this.page = page;
-    this.midi = midi;
-    // this.draw();
+    this.draw();
 }
 
 Key.prototype.setColor = function (color) {
@@ -46,15 +45,13 @@ Key.prototype.setColor = function (color) {
 };
 
 Key.prototype.draw = function () {
-    if (this.midi) {
         if (this.page != NLM.page) return;
         if (this.y == 8) {
-            this.midi.send([0xb0, this.x + 0x68, this.color]);
+            NLM.sendToDevice([0xb0, this.x + 0x68, this.color]);
             return;
         }
-        this.midi.send([0x90, this.x + this.y * 16, this.color]);
+        NLM.sendToDevice([0x90, this.x + this.y * 16, this.color]);
         //midi.sendShortMsg(0xb0, 0x0, 0x28); //Enable buffer cycling
-    }
 }
 
 Key.prototype.onPush = function () {

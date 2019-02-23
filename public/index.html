@@ -3,6 +3,8 @@
 
 <head>
     <!-- Required meta tags -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
+        integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <script src="./scripts/DeckPlayer.js"></script>
@@ -46,6 +48,9 @@
                     aria-controls="v-pills-dash" aria-selected="true">Dashboard</a>
                 <a class="nav-link" id="v-pills-playist-tab" data-toggle="pill" href="#v-pills-playist" role="tab"
                     aria-controls="v-pills-playist" aria-selected="false">Playist Manager</a>
+                <a class="nav-link" id="v-pills-samplers-tab" data-toggle="pill" href="#v-pills-samplers" role="tab"
+                    aria-controls="v-pills-samplers" aria-selected="false">Sampler Manager</a>
+
             </div>
         </div>
         <div class="col-10">
@@ -64,22 +69,19 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-1">
-                                <button class="btn btn-primary" id="playPauseButton" onclick="player.togglePlay()"
-                                    disabled>Play</button>
-                            </div>
-                            <div class="col-5">
-                                <div class="progress">
-                                    <div id="playingProgress" class="progress-bar" role="progressbar" aria-valuenow="0"
-                                        aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
+                            <div class="col-8">
+                                <button class="btn btn-default" id="prevTrackButton" onclick="player.previous()"
+                                    disabled><i class="fas fa-backward"></i></button>
+                                <button class="btn btn-default" id="playPauseButton" onclick="player.togglePlay()"
+                                    disabled><i class="fas fa-play"></i></button>
+                                <button class="btn btn-default" id="nextTrackButton" onclick="player.next()" disabled><i
+                                        class="fas fa-forward"></i></button>
+
+                                <input type="range" id="playingProgress" class="custom-range w-75" value="0">
 
                             </div>
-                            <div class="col-6">
+                            <div class="col-4">
                                 <input type="range" min="0" max="100" class="slider" id="volumeSlider" />
-
-                                <button class="btn btn-primary" onclick="player.setVolume(.5)">50%</button>
-                                <button class="btn btn-primary" onclick="player.setVolume(1)">100%</button>
                             </div>
                         </div>
                         <div class="row">
@@ -118,6 +120,36 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="tab-pane fade" id="v-pills-samplers" role="tabpanel" aria-labelledby="v-pills-samplers-tab">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-3">
+                                <h2>Library</h2>
+                                <div class="form-group">
+                                    <label for="searchInput">Search</label>
+                                    <input class="form-control" id="searchInput">
+                                </div>
+                            </div>
+                            <div class="col-9">Samplers</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <ul class="list-group" id="filteredTracksList">
+
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="col-9">
+                                <div class="container" id="samplerTargets"></div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -144,34 +176,109 @@
         });
     </script>
     <script>
+        function initSamplerPage() {
+
+            $.get("http://127.0.0.1:3000/library", "", (tracks) => {
+
+                var searchElem = document.getElementById('searchInput');
+                var listElem = document.getElementById('filteredTracksList');
+                searchElem.oninput = function () {
+                    while (listElem.firstChild) {
+                        listElem.removeChild(listElem.firstChild);
+                    }
+                    var searchValue = searchElem.value;
+                    var filtered = tracks.filter((track) => track.name.includes(searchValue)).slice(0, 15).map((track) => {
+                        var listItemElement = document.createElement('li');
+                        listItemElement.classList.add('list-group-item');
+                        listItemElement.innerText = track.name;
+                        listItemElement.ondragstart = dragtest;
+                        listItemElement.draggable = true;
+                        listItemElement.src = track.file;
+                        listElem.appendChild(listItemElement);
+                    })
 
 
+                };
 
-        var buttonDefs = new Array();
+            });
+
+            function dragtest(ev) {
+                ev.dataTransfer.setData("text", ev.target.innerText);
+                ev.dataTransfer.setData("src", ev.target.src);
+            }
+
+            function allowDrop(ev) {
+                ev.preventDefault();
+            }
+
+            function dropTrack(ev) {
+                ev.preventDefault();
+                var data = ev.dataTransfer.getData("text");
+                ev.target.innerText=data;
+                ev.target.src= ev.dataTransfer.getData("src");
+            }
+
+            var samplerContainer = document.getElementById('samplerTargets');
+
+            for (row = 0; row < 8; row++) {
+                var rowElement = document.createElement('DIV');
+                rowElement.classList.add('row');
+                for (col = 0; col < 4; col++) {
+                    var colElement = document.createElement('DIV');
+                    colElement.classList.add('col');
+
+                    var button = document.createElement('BUTTON');
+                    button.classList.add('btn');
+                    button.classList.add('btn-default');
+                    button.innerText = '___';
+                    button.ondrop = dropTrack;
+                    button.ondragover = allowDrop;
+                    button.onclick= function(){
+                        if(this.src){
+                            var audio = new Audio();
+                            audio.src = this.src;
+                            audio.play();
+                        }
+                    }
+                    colElement.appendChild(button);
+                    rowElement.appendChild(colElement);
+                }
+                samplerContainer.appendChild(rowElement);
+            }
+
+        }
+        initSamplerPage();
+
+        NLM.init();
+
 
         var player = new PlaylistPlayer();
         player.progressUpdate = function (percentage) {
             var progressElement = document.getElementById('playingProgress');
-            progressElement.setAttribute('style', 'width: ' + Math.floor(percentage * 100) + '%');
+            progressElement.value = percentage * 100;
         }
         var midiPlayKey = PlayKey(() => {
             player.togglePlay();
         });
-        buttonDefs.push({ page: 0, x: 0, y: 8, key: midiPlayKey });
+
+        NLM.setupBtn(0, 0, 8, CallbackKey('hi_green', 'lo_amber', () => player.previous()));
+        NLM.setupBtn(0, 1, 8, midiPlayKey);
+        NLM.setupBtn(0, 2, 8, CallbackKey('hi_green', 'lo_amber', () => player.next()));
 
 
         player.onPlay = function () {
             var element = document.getElementById("playPauseButton");
-            element.innerHTML = "Pause";
+            element.innerHTML = '<i class="fas fa-pause"></i>';
             element.disabled = false;
             midiPlayKey.playing = true;
             midiPlayKey.setled();
-
+            document.getElementById('prevTrackButton').disabled = false;
+            document.getElementById('nextTrackButton').disabled = false;
         }
 
         player.onPause = function () {
             var element = document.getElementById("playPauseButton");
-            element.innerHTML = "Play";
+            element.innerHTML = '<i class="fas fa-play"></i>';
             element.disabled = false;
 
             midiPlayKey.playing = false;
@@ -182,7 +289,9 @@
         volumeSlider.oninput = function () {
             player.setVolume(this.value / 100);
         }
-
+        document.getElementById("playingProgress").oninput = function () {
+            player.setPosition(this.value / 100);
+        }
 
 
 
@@ -227,12 +336,11 @@
                         loadPlaylist(index)
                     }
                 }.bind(tempKey);
-                buttonDefs.push({
-                    page: 0, x: 0, y: index, key: tempKey
-                });
+                NLM.setupBtn(0, 0, index, tempKey);
                 playlistKeys.push(tempKey);
 
                 document.getElementById('playlistsDiv').appendChild(label);
+
             });
 
         }
@@ -259,7 +367,7 @@
             tempKey.onPushCallback = function (value) {
                 player.setVolume(value);
             };
-            buttonDefs.push({ page: 0, x: 3, y: 7 - i, key: tempKey });
+            NLM.setupBtn(0, 3, 7 - i, tempKey);
             volumeKeys.push(tempKey);
         }
 
@@ -271,33 +379,6 @@
         }
 
         player.setVolume(1);
-
-        // var lightKeys = new Array();
-
-        // function makeLightRequest(value){
-        //     $.ajax({
-        //             url: '',
-        //             type: 'PUT',
-        //             headers:{
-        //                 "Access-Control-Allow-Origin": '*'
-        //             },
-        //             success: function(result){
-        //                 console.log(result);
-        //             },
-        //             error:function(error){
-        //                 console.log('Error ${error}')
-        //             }
-
-        //         })
-        // }
-        // // Volume Control
-        // for (i = 0; i < 8; i++) {
-        //     var tempKey = SliderKey(1, i);
-        //     tempKey.onPushCallback = makeLightRequest;
-        //     buttonDefs.push({ page: 0, x: 7, y: 7 - i, key: tempKey });
-        // }
-
-
 
         function midiInit(midi) {
             var inputs = midi.inputs.values();
@@ -318,7 +399,10 @@
                 if (output.value.name.startsWith('Launchpad Mini')) {
                     // each time there is a midi message call the onMIDIMessage function
                     console.log('Found output midi');
-                    NLM.init(output.value, buttonDefs);
+                    NLM.sendToDevice = function (data) {
+                        output.value.send(data);
+                    }
+                    NLM.drawPage();
                     break;
                 }
             }

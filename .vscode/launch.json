@@ -8,8 +8,8 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceFolder}/server.js",
-            "args":["--library=./public/music"]
+            "program": "${workspaceFolder}/server/server.js",
+            "args":["--library=${workspaceFolder}/client/public/music","--clientRoot=${workspaceFolder}\\client"]
         }
     ]
 }

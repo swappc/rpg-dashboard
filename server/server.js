@@ -7,7 +7,7 @@ var fs = require('fs');
 var path = require('path');
 const args = require('minimist')(process.argv.slice(2))
 
-let db = new sqlite3.Database('./db/playlists.db', (err) => {
+let db = new sqlite3.Database('./server/db/playlists.db', (err) => {
   if (err) {
     console.error(err.message);
   }
@@ -76,14 +76,16 @@ if (args['dbinit']) {
 }
 
 
+let clientRoot = args['clientRoot']?args['clientRoot']:'../client';
+
 app.get('/', (request, response) => {
   response.redirect("http://127.0.0.1:3000/index.html")
 })
 
-app.use('/scripts', express.static("public/scripts"))
-app.use('/public/music', express.static("public/music"))
+app.use('/scripts', express.static(clientRoot+"/public/scripts"))
+app.use('/public/music', express.static(clientRoot+"/public/music"))
 
-app.use('/index.html', express.static("public/index.html"))
+app.use('/index.html', express.static(clientRoot+"/public/index.html"))
 
 app.get('/playlists', (request, response) => {
 
@@ -114,14 +116,14 @@ app.get('/playlists', (request, response) => {
       }
 
 
-      response.json(200, realRetVal);
+      response.status(200).json(realRetVal);
 
     })
 });
 
 app.get('/library', (request, response)=>{
   db.all("SELECT * FROM library_tracks",[], (err, rows)=>{
-    response.json(200, rows);
+    response.status(200).json(rows);
   })
 })
 

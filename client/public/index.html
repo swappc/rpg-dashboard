@@ -14,7 +14,6 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
         integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-
     <title>RPG Audio Dashboard</title>
 </head>
 
@@ -139,7 +138,7 @@
     <script>
         function initSamplerPage() {
 
-            $.get("http://127.0.0.1:3000/library", "", (tracks) => {
+            $.get("/library", "", (tracks) => {
 
                 var searchElem = document.getElementById('searchInput');
                 var listElem = document.getElementById('filteredTracksList');
@@ -175,8 +174,8 @@
             function dropTrack(ev) {
                 ev.preventDefault();
                 var data = ev.dataTransfer.getData("text");
-                ev.target.innerText=data;
-                ev.target.src= ev.dataTransfer.getData("src");
+                ev.target.innerText = data;
+                ev.target.src = ev.dataTransfer.getData("src");
             }
 
             var samplerContainer = document.getElementById('samplerTargets');
@@ -194,8 +193,8 @@
                     button.innerText = '___';
                     button.ondrop = dropTrack;
                     button.ondragover = allowDrop;
-                    button.onclick= function(){
-                        if(this.src){
+                    button.onclick = function () {
+                        if (this.src) {
                             var audio = new Audio();
                             audio.src = this.src;
                             audio.play();

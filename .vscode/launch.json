@@ -9,7 +9,7 @@
             "request": "launch",
             "name": "Launch Program",
             "program": "${workspaceFolder}/server/server.js",
-            "args":["--library=${workspaceFolder}/client/public/music","--clientRoot=${workspaceFolder}\\client"]
+            "args":["--library=${workspaceFolder}/client/public/music","--clientRoot=${workspaceFolder}/client"]
         }
     ]
 }

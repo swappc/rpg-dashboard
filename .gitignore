@@ -1,4 +1,4 @@
 *\.DS_Store
-public/music/*
-node_modules/*
+/client/public/music/*
+*/node_modules
 *.db

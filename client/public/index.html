@@ -14,6 +14,29 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
         integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+<<<<<<< HEAD:client/public/index.html
+=======
+    <style>
+        #libraryTracksDiv,
+        #playlistTracks {
+            border: 1px solid #eee;
+            min-height: 600px;
+            list-style-type: none;
+            margin: 0;
+            padding: 5px 0 0 0;
+            float: left;
+            margin-right: 10px;
+        }
+
+        #libraryTracksDiv li,
+        #playlistTracks li {
+            margin: 0 5px 5px 5px;
+            padding: 5px;
+            font-size: 1.2em;
+        }
+    </style>
+
+>>>>>>> 6d1b241d89e2d1edf467965d130a952a44956173:public/index.html
     <title>RPG Audio Dashboard</title>
 </head>
 
@@ -78,14 +101,23 @@
                                 <h2>Playlists</h2>
                             </div>
                             <div class="col">
-                                <h2>Songs in Playist</h2>
+                                <div class="row">
+                                    <h2>Songs in Playist</h2>
+                                </div>
+                                <div class="row">
+                                    <nav class="col">
+                                        <ul id="playlistTracks" class="connectedSortable col">
+                                    </nav>
+                                </div>
                             </div>
                             <div class="col">
                                 <div class="row">
                                     <h2>Songs In Library</h2>
                                 </div>
                                 <div class="row">
-                                    more
+                                    <nav class="col">
+                                        <ul id="libraryTracksDiv" class="connectedSortable col">
+                                    </nav>
                                 </div>
                             </div>
                         </div>
@@ -135,6 +167,17 @@
         integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
         crossorigin="anonymous"></script>
     <script src="scripts/playlist_manager/playlistManager.js"></script>
+    <script src="scripts/playlist_manager/playlistManager.js"></script>
+    <script src="scripts/playlist_manager/playlistManager.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        $(function () {
+            $("#libraryTracksDiv, #playlistTracks").sortable({
+                connectWith: ".connectedSortable"
+            }).disableSelection();
+        });
+    </script>
     <script>
         function initSamplerPage() {
 
@@ -147,13 +190,13 @@
                         listElem.removeChild(listElem.firstChild);
                     }
                     var searchValue = searchElem.value;
-                    var filtered = tracks.filter((track) => track.trackName.includes(searchValue)).slice(0, 15).map((track) => {
+                    var filtered = tracks.filter((track) => track.name.includes(searchValue)).slice(0, 15).map((track) => {
                         var listItemElement = document.createElement('li');
                         listItemElement.classList.add('list-group-item');
-                        listItemElement.innerText = track.trackName;
+                        listItemElement.innerText = track.name;
                         listItemElement.ondragstart = dragtest;
                         listItemElement.draggable = true;
-                        listItemElement.src = track.trackFile;
+                        listItemElement.src = track.file;
                         listElem.appendChild(listItemElement);
                     })
 
@@ -305,9 +348,20 @@
 
         }
 
+        function processLibrary(libraryTracks) {
+            libraryTracks.forEach((element, index) => {
+                var name = document.createElement('li');
+                name.classList.add("ui-state-default");
+                name.innerHTML = element.name;
+                document.getElementById('libraryTracksDiv').appendChild(name);
+            });
+        }
+
 
 
         $.get("http://127.0.0.1:3000/playlists", "", processPlaylists);
+
+        $.get("http://127.0.0.1:3000/library", "", processLibrary);
 
         var volumeKeys = new Array();
         // Volume Control

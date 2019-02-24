@@ -121,11 +121,22 @@ app.get('/playlists', (request, response) => {
     })
 });
 
+<<<<<<< HEAD:server/server.js
 app.get('/library', (request, response)=>{
   db.all("SELECT * FROM library_tracks",[], (err, rows)=>{
     response.status(200).json(rows);
   })
 })
+=======
+app.get('/library', (request, response) => {
+  db.all(
+    "SELECT lt.trackName as name, lt.trackFile as file \
+  FROM library_tracks lt \
+  order by lt.trackName", [], (err, rows) => {
+      response.json(200, rows);
+    })
+});
+>>>>>>> 6d1b241d89e2d1edf467965d130a952a44956173:server.js
 
 
 app.listen(port, (err) => {

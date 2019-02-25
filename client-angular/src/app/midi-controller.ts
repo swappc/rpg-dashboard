@@ -243,6 +243,7 @@ export class SliderKey extends Key {
 
 export class GroupKey extends Key {
     static keys = new Array();
+    selected = false;
     active = false;
     constructor(private group: string, private pos: number) {
         super();
@@ -254,25 +255,34 @@ export class GroupKey extends Key {
     }
 
     setled() {
-        if (!this.active) {
-            this.setColor(KeyColor.mi_amber);
+        if (!this.selected) {
+            this.setColor(KeyColor.lo_orange);
         } else {
-            this.setColor(KeyColor.mi_green);
+            if(this.active){
+            this.setColor(KeyColor.hi_green);
+            }else{
+                this.setColor(KeyColor.hi_yellow);
+            }
         }
     }
 
-    setValue(activePos) {
-        this.active = activePos == this.pos;
+    setValue(selectedPos) {
+        this.selected = selectedPos == this.pos;
+        if(this.selected){
+            this.active = !this.active;
+        }else{
+            this.active=false;
+        }
         this.setled();
     }
 
     onPush() {
         var targetValue = this.pos;
-        // Was it already active?
-        if(this.active){
-            this.onActivePush();
+        // Was it already selected?
+        if(this.selected){
+            this.onSelectedPush();
         }else{
-            this.onInactivePush();
+            this.onUnSelectedPush();
         }
 
         // Update all key states (changes which key is active)
@@ -282,11 +292,11 @@ export class GroupKey extends Key {
         });
     }
 
-    onActivePush(){
+    onSelectedPush(){
 
     }
 
-    onInactivePush(){
+    onUnSelectedPush(){
 
     }
 }

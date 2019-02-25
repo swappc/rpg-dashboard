@@ -14,10 +14,10 @@ export class PlaylistPlayerComponent implements OnInit {
   playlists: Playlist[];
   currentTrack: string;
   currentPlayer: DeckPlayer;
-  volume = 100;
+  volume: number;
   currentProgress = 0;
   midiPlayKey: PlayKey;
-  midiController:NLM;
+  midiController: NLM;
   volumeKeys: SliderKey[]
 
 
@@ -32,14 +32,15 @@ export class PlaylistPlayerComponent implements OnInit {
     this.midiController.setupBtn(0, 2, 8, new CallbackKey(() => this.next(), KeyColor.hi_green, KeyColor.lo_amber));
 
     this.volumeKeys = new Array();
-    for(var i=0; i<8;i++){
-      var tempKey = new SliderKey('volume',i);
-      tempKey.onPushCallback = function(value){
+    for (var i = 0; i < 8; i++) {
+      var tempKey = new SliderKey('volume', i);
+      tempKey.onPushCallback = function (value) {
         this.setVolume(value);
       }.bind(this);
-      this.midiController.setupBtn(0,3,7-i, tempKey);
+      this.midiController.setupBtn(0, 3, 7 - i, tempKey);
       this.volumeKeys.push(tempKey);
     }
+    this.setVolume(100);
   }
 
   ngOnInit() {
@@ -52,10 +53,10 @@ export class PlaylistPlayerComponent implements OnInit {
         this.playlists = playlists;
         this.playlists.forEach((element, index) => {
           var tempKey = new GroupKey("playlists", index);
-          tempKey.onActivePush = () => {
+          tempKey.onSelectedPush = () => {
             this.togglePlay()
           };
-          tempKey.onInactivePush = () => { this.setPlaylist(element) };
+          tempKey.onUnSelectedPush = () => { this.setPlaylist(element) };
           this.midiController.setupBtn(0, 0, index, tempKey);
         })
 
@@ -76,7 +77,7 @@ export class PlaylistPlayerComponent implements OnInit {
       this.progressUpdate(currentTime / duration);
     }.bind(this);
     this.currentPlayer.setPlaylist(playlist);
-    this.currentPlayer.fadeIn(this.volume/100);
+    this.currentPlayer.fadeIn(this.volume / 100);
 
     this.onPlay();
   }
@@ -112,27 +113,29 @@ export class PlaylistPlayerComponent implements OnInit {
   }
 
   onPause() {
-    this.midiPlayKey.playing=false;
+    this.midiPlayKey.playing = false;
     this.midiPlayKey.setled();
   }
 
   onPlay() {
-    this.midiPlayKey.playing=true;
+    this.midiPlayKey.playing = true;
     this.midiPlayKey.setled();
   }
 
-changeVolume(event:any){
-  this.setVolume(event.value);
-}
+  changeVolume(event: any) {
+    this.setVolume(event.value);
+  }
   setVolume(targetVolume) {
-    this.currentPlayer.fadeToTarget(targetVolume);
+    if (this.currentPlaylist) {
+      this.currentPlayer.fadeToTarget(targetVolume);
+    }
     this.volume = targetVolume;
     this.onVolumeChange(targetVolume);
 
   }
 
   onVolumeChange(newVolume) {
-    this.volumeKeys.forEach((e)=>{
+    this.volumeKeys.forEach((e) => {
       e.setValue(newVolume);
     })
   }

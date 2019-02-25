@@ -12,7 +12,7 @@ export class DeckPlayer {
     playlist: Playlist;
     currentSong = 0;
     playerElement = new Audio();
-    volume = 1;
+    volume = 0;
     timer = null;
 
     constructor() {
@@ -23,6 +23,8 @@ export class DeckPlayer {
         this.playerElement.ontimeupdate = function (event) {
             this.timeUpdate(this.playerElement.currentTime, this.playerElement.duration);
         }.bind(this);
+
+        this.playerElement.volume = this.volume;
     }
 
     loadTrack(trackNum: number) {

@@ -23,7 +23,7 @@
     <mat-slider min="0" max="100" value="{{currentProgress}}" (input)="setPosition($event)"></mat-slider>
   </mat-grid-tile>
   <mat-grid-tile colspan="2" rowspan="1">
-    <mat-slider min="0" max="100" value="0"></mat-slider>
+    <mat-slider min="0" step=".01" max="1" value="{{volume}}" (input)="changeVolume($event)"></mat-slider>
   </mat-grid-tile>
 
   <mat-grid-tile colspan="6" rowspan="1">

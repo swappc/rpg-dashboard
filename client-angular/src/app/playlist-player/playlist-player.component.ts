@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Playlist, DeckPlayer } from '../playlist'
 import { PlaylistService } from '../playlist-service.service';
 import { MidiService } from '../midi.service';
-import { GroupKey, CallbackKey, KeyColor, PlayKey } from '../midi-controller';
+import { GroupKey, CallbackKey, KeyColor, PlayKey, SliderKey, NLM } from '../midi-controller';
 
 @Component({
   selector: 'app-playlist-player',
@@ -14,19 +14,32 @@ export class PlaylistPlayerComponent implements OnInit {
   playlists: Playlist[];
   currentTrack: string;
   currentPlayer: DeckPlayer;
-  volume = 1;
+  volume = 100;
   currentProgress = 0;
   midiPlayKey: PlayKey;
+  midiController:NLM;
+  volumeKeys: SliderKey[]
 
 
   constructor(
     private playlistService: PlaylistService,
-    private midiService: MidiService
+    midiService: MidiService
   ) {
-    this.midiService.getController().setupBtn(0, 0, 8, new CallbackKey(() => this.previous(), KeyColor.hi_green, KeyColor.lo_amber));
+    this.midiController = midiService.getController();
+    this.midiController.setupBtn(0, 0, 8, new CallbackKey(() => this.previous(), KeyColor.hi_green, KeyColor.lo_amber));
     this.midiPlayKey = new PlayKey(() => this.togglePlay());
-    this.midiService.getController().setupBtn(0, 1, 8, this.midiPlayKey);
-    this.midiService.getController().setupBtn(0, 2, 8, new CallbackKey(() => this.next(), KeyColor.hi_green, KeyColor.lo_amber));
+    this.midiController.setupBtn(0, 1, 8, this.midiPlayKey);
+    this.midiController.setupBtn(0, 2, 8, new CallbackKey(() => this.next(), KeyColor.hi_green, KeyColor.lo_amber));
+
+    this.volumeKeys = new Array();
+    for(var i=0; i<8;i++){
+      var tempKey = new SliderKey('volume',i);
+      tempKey.onPushCallback = function(value){
+        this.setVolume(value);
+      }.bind(this);
+      this.midiController.setupBtn(0,3,7-i, tempKey);
+      this.volumeKeys.push(tempKey);
+    }
   }
 
   ngOnInit() {
@@ -43,7 +56,7 @@ export class PlaylistPlayerComponent implements OnInit {
             this.togglePlay()
           };
           tempKey.onInactivePush = () => { this.setPlaylist(element) };
-          this.midiService.getController().setupBtn(0, 0, index, tempKey);
+          this.midiController.setupBtn(0, 0, index, tempKey);
         })
 
       });
@@ -63,7 +76,7 @@ export class PlaylistPlayerComponent implements OnInit {
       this.progressUpdate(currentTime / duration);
     }.bind(this);
     this.currentPlayer.setPlaylist(playlist);
-    this.currentPlayer.fadeIn(this.volume);
+    this.currentPlayer.fadeIn(this.volume/100);
 
     this.onPlay();
   }
@@ -108,7 +121,9 @@ export class PlaylistPlayerComponent implements OnInit {
     this.midiPlayKey.setled();
   }
 
-
+changeVolume(event:any){
+  this.setVolume(event.value);
+}
   setVolume(targetVolume) {
     this.currentPlayer.fadeToTarget(targetVolume);
     this.volume = targetVolume;
@@ -117,7 +132,9 @@ export class PlaylistPlayerComponent implements OnInit {
   }
 
   onVolumeChange(newVolume) {
-
+    this.volumeKeys.forEach((e)=>{
+      e.setValue(newVolume);
+    })
   }
 
   progressUpdate(percentage) {

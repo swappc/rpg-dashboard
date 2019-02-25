@@ -1,25 +1,33 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppComponent } from './app.component';
 
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { CustomMaterialModule } from './custom-material.module';
 import { PlaylistPlayerComponent } from './playlist-player/playlist-player.component';
-import { HttpClientModule }    from '@angular/common/http';
+import { AppRoutingModule } from './app-routing.module';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { PlaylistManagerComponent } from './playlist-manager/playlist-manager.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    PlaylistPlayerComponent
+    PlaylistPlayerComponent,
+    PageNotFoundComponent,
+    PlaylistManagerComponent
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     CustomMaterialModule,
-    HttpClientModule
+    FormsModule,
+    HttpClientModule,
+    AppRoutingModule
   ],
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}

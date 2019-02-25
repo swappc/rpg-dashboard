@@ -243,15 +243,23 @@ export class SliderKey extends Key {
 
 export class GroupKey extends Key {
     static keys = new Array();
+
+    static setGroupSelected(group: string, selectedId: any){
+        // Update all key states (changes which key is active)
+        GroupKey.keys[group].forEach(function (e) {
+            e.setSelected(selectedId);
+            e.setled();
+        });
+    }
     selected = false;
     active = false;
-    constructor(private group: string, private pos: number) {
+    constructor(private group: string, private id: any) {
         super();
         this.setled();
         if (GroupKey.keys[group] == undefined) {
             GroupKey.keys[group] = new Array();
         }
-        GroupKey.keys[group][pos] = this;
+        GroupKey.keys[group].push(this);
     }
 
     setled() {
@@ -266,8 +274,8 @@ export class GroupKey extends Key {
         }
     }
 
-    setValue(selectedPos) {
-        this.selected = selectedPos == this.pos;
+    setSelected(selectedId) {
+        this.selected = selectedId == this.id;
         if(this.selected){
             this.active = !this.active;
         }else{
@@ -277,19 +285,15 @@ export class GroupKey extends Key {
     }
 
     onPush() {
-        var targetValue = this.pos;
+        var targetId = this.id;
         // Was it already selected?
         if(this.selected){
             this.onSelectedPush();
         }else{
             this.onUnSelectedPush();
         }
+        GroupKey.setGroupSelected(this.group, this.id);
 
-        // Update all key states (changes which key is active)
-        GroupKey.keys[this.group].forEach(function (e) {
-            e.setValue(targetValue);
-            e.setled();
-        });
     }
 
     onSelectedPush(){

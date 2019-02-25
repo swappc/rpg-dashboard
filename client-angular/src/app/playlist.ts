@@ -28,7 +28,7 @@ export class DeckPlayer {
     }
 
     loadTrack(trackNum: number) {
-        this.playerElement.src = this.playlist.files[trackNum].file;
+        this.playerElement.src = this.playlist.files[trackNum].file.substr(2);
     }
     playNext() {
         if (this.playlist.files.length === 0) {

@@ -19,6 +19,7 @@ export class PlaylistPlayerComponent implements OnInit {
   midiPlayKey: PlayKey;
   midiController: NLM;
   volumeKeys: SliderKey[]
+  playlistKeyGroup = "playlists";
 
 
   constructor(
@@ -52,7 +53,7 @@ export class PlaylistPlayerComponent implements OnInit {
       .subscribe(playlists => {
         this.playlists = playlists;
         this.playlists.forEach((element, index) => {
-          var tempKey = new GroupKey("playlists", index);
+          var tempKey = new GroupKey(this.playlistKeyGroup, element.name);
           tempKey.onSelectedPush = () => {
             this.togglePlay()
           };
@@ -65,6 +66,7 @@ export class PlaylistPlayerComponent implements OnInit {
 
   setPlaylist(playlist: Playlist): void {
     this.currentPlaylist = playlist.name;
+    GroupKey.setGroupSelected(this.playlistKeyGroup, playlist.name);
     this.currentTrack = playlist.files[0].file.substr(2);
 
     if (this.currentPlayer) {
@@ -77,7 +79,7 @@ export class PlaylistPlayerComponent implements OnInit {
       this.progressUpdate(currentTime / duration);
     }.bind(this);
     this.currentPlayer.setPlaylist(playlist);
-    this.currentPlayer.fadeIn(this.volume / 100);
+    this.currentPlayer.fadeIn(this.volume);
 
     this.onPlay();
   }

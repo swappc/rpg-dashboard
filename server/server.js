@@ -1,5 +1,7 @@
 const express = require('express')
+const cors = require('cors')
 const app = express()
+app.use(cors());
 const port = 3000
 const sqlite3 = require('sqlite3').verbose();
 
@@ -7,7 +9,9 @@ var fs = require('fs');
 var path = require('path');
 const args = require('minimist')(process.argv.slice(2))
 
-let db = new sqlite3.Database('./server/db/playlists.db', (err) => {
+let serverRoot = args['serverRoot'] ? args['serverRoot'] : './server/';
+
+let db = new sqlite3.Database(serverRoot + '/db/playlists.db', (err) => {
   if (err) {
     console.error(err.message);
   }
@@ -76,16 +80,28 @@ if (args['dbinit']) {
 }
 
 
-let clientRoot = args['clientRoot']?args['clientRoot']:'../client';
+let clientRoot = args['clientRoot'] ? args['clientRoot'] : '../client';
 
 app.get('/', (request, response) => {
   response.redirect("http://127.0.0.1:3000/index.html")
 })
 
-app.use('/scripts', express.static(clientRoot+"/public/scripts"))
-app.use('/public/music', express.static(clientRoot+"/public/music"))
+if (args['angular']) {
+  app.use('/', express.static("./client-angular/dist/client-angular/"))
+  app.use('/public/music', express.static(clientRoot + "/public/music"))
 
-app.use('/index.html', express.static(clientRoot+"/public/index.html"))
+  app.use('/index.html', express.static("./client-angular/dist/client-angular/index.html"))
+
+} else {
+  app.use('/scripts', express.static(clientRoot+"/public/scripts"))
+  app.use('/public/music', express.static(clientRoot+"/public/music"))
+
+  app.use('/index.html', express.static(clientRoot+"/public/index.html"))
+
+}
+
+
+
 
 app.get('/playlists', (request, response) => {
 

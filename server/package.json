@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/thattolleyguy/rpg-dashboard#readme",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.16.4",
     "minimist": "^1.2.0",
     "path": "^0.12.7",

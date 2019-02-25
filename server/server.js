@@ -56,6 +56,7 @@ if (args['dbinit']) {
       if (!row) {
         db.run('DELETE FROM playlists');
         fs.readFile('playlists.json', 'utf8', function (err, contents) {
+          console.log(contents);
           JSON.parse(contents).forEach((playlist, index) => {
             db.run('INSERT INTO playlists(id, name) VALUES (?,?)', [index, playlist.name]);
             var playlistFiles = playlist.files.map((track) => track.name);
@@ -88,15 +89,20 @@ app.get('/', (request, response) => {
 
 if (args['angular']) {
   app.use('/', express.static("./client-angular/dist/client-angular/"))
-  app.use('/public/music', express.static( "./client/public/music"))
+  app.use('/public/music', express.static("./client/public/music"))
 
   app.use('/index.html', express.static("./client-angular/dist/client-angular/index.html"))
 
-} else {
-  app.use('/scripts', express.static(clientRoot+"/public/scripts"))
-  app.use('/public/music', express.static(clientRoot+"/public/music"))
+  app.use(function (req, res) {
+    res.sendfile('./client-angular/dist/client-angular/')
+  });
 
-  app.use('/index.html', express.static(clientRoot+"/public/index.html"))
+
+} else {
+  app.use('/scripts', express.static(clientRoot + "/public/scripts"))
+  app.use('/public/music', express.static(clientRoot + "/public/music"))
+
+  app.use('/index.html', express.static(clientRoot + "/public/index.html"))
 
 }
 

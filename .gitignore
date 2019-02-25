@@ -1,6 +1,6 @@
 *\.DS_Store
 /client/public/music/*
-*/node_modules
+*node_modules
 *.db
 client-angular/dist
 client-angular/node_modules

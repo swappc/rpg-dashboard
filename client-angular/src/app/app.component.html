@@ -2,4 +2,9 @@
 <mat-toolbar color="primary">
   <h1>RPG Dashboard</h1>
 </mat-toolbar>
-<app-playlist-player></app-playlist-player>
+<nav>
+  <a routerLink="/player" routerLinkActive="active">Playlist Player</a>
+  <!-- <a routerLink="/manager" routerLinkActive="active">Playlist Manager</a> -->
+</nav>
+<router-outlet></router-outlet>
+<!-- <app-playlist-player></app-playlist-player> -->

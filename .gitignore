@@ -2,3 +2,5 @@
 /client/public/music/*
 */node_modules
 *.db
+client-angular/dist
+client-angular/node_modules

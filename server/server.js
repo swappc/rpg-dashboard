@@ -88,7 +88,7 @@ app.get('/', (request, response) => {
 
 if (args['angular']) {
   app.use('/', express.static("./client-angular/dist/client-angular/"))
-  app.use('/public/music', express.static(clientRoot + "/public/music"))
+  app.use('/public/music', express.static( "./client/public/music"))
 
   app.use('/index.html', express.static("./client-angular/dist/client-angular/index.html"))
 

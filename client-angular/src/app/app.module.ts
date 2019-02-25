@@ -7,13 +7,11 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { CustomMaterialModule } from './custom-material.module';
 import { PlaylistPlayerComponent } from './playlist-player/playlist-player.component';
 import { HttpClientModule }    from '@angular/common/http';
-import { PlaylistComponent } from './playlist/playlist.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    PlaylistPlayerComponent,
-    PlaylistComponent
+    PlaylistPlayerComponent
   ],
   imports: [
     BrowserModule,

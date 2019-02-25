@@ -4,12 +4,20 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+                
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
+            "name": "Launch Old Client",
             "program": "${workspaceFolder}/server/server.js",
             "args":["--library=${workspaceFolder}/client/public/music","--clientRoot=${workspaceFolder}/client"]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Angular",
+            "program": "${workspaceFolder}/server/server.js",
+            "args":["--library=${workspaceFolder}/client/public/music","--angular=true"]
         }
     ]
 }

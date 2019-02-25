@@ -4,20 +4,33 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-                
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Debug Angular in Chrome",
+            "url": "http://localhost:3000",
+            "webRoot": "${workspaceFolder}",
+            "preLaunchTask": "client-watch"
+        },
         {
             "type": "node",
             "request": "launch",
             "name": "Launch Old Client",
             "program": "${workspaceFolder}/server/server.js",
-            "args":["--library=${workspaceFolder}/client/public/music","--clientRoot=${workspaceFolder}/client"]
+            "args": [
+                "--library=${workspaceFolder}/client/public/music",
+                "--clientRoot=${workspaceFolder}/client"
+            ]
         },
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Angular",
+            "name": "Launch Angular Server",
             "program": "${workspaceFolder}/server/server.js",
-            "args":["--library=${workspaceFolder}/client/public/music","--angular=true"]
+            "args": [
+                "--library=${workspaceFolder}/client/public/music",
+                "--angular=true"
+            ]
         }
     ]
 }

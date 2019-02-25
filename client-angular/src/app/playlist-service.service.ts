@@ -14,7 +14,7 @@ export class PlaylistService{
   ) { }
 
   getPlaylists(): Observable<Playlist[]> {
-    return this.http.get<Playlist[]>('http://localhost:3000/playlists');
+    return this.http.get<Playlist[]>('http://localhost:3000/api/playlists');
   }
 
 }

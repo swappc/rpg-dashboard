@@ -3,10 +3,10 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { CustomMaterialModule } from './custom-material.module';
 
 import { AppComponent } from './app.component';
 
-import { CustomMaterialModule } from './custom-material.module';
 import { PlaylistPlayerComponent } from './playlist-player/playlist-player.component';
 import { AppRoutingModule } from './app-routing.module';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';

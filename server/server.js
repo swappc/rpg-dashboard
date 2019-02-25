@@ -93,8 +93,15 @@ if (args['angular']) {
 
   app.use('/index.html', express.static("./client-angular/dist/client-angular/index.html"))
 
-  app.use(function (req, res) {
-    res.sendfile('./client-angular/dist/client-angular/')
+  app.use(function (req, res, next) {
+    var url = require("url");
+    var result = url.parse(req.url);
+    if (!result.path.startsWith("/api")) {
+      res.sendfile('./client-angular/dist/client-angular/')
+    }
+    else {
+      next();
+    }
   });
 
 
@@ -109,7 +116,7 @@ if (args['angular']) {
 
 
 
-app.get('/playlists', (request, response) => {
+app.get('/api/playlists', (request, response) => {
 
   db.all(
     "SELECT p.name, lt.trackName, lt.trackFile \
@@ -143,7 +150,7 @@ app.get('/playlists', (request, response) => {
     })
 });
 
-app.get('/library', (request, response) => {
+app.get('/api/library', (request, response) => {
   db.all(
     "SELECT lt.trackName as name, lt.trackFile as file \
   FROM library_tracks lt \

@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Playlist, DeckPlayer } from '../playlist'
 import { PlaylistService } from '../playlist-service.service';
 import { MidiService } from '../midi.service';
-import {GroupKey} from '../midi-controller';
+import { GroupKey, CallbackKey, KeyColor, PlayKey } from '../midi-controller';
 
 @Component({
   selector: 'app-playlist-player',
@@ -16,12 +16,17 @@ export class PlaylistPlayerComponent implements OnInit {
   currentPlayer: DeckPlayer;
   volume = 1;
   currentProgress = 0;
+  midiPlayKey: PlayKey;
 
 
   constructor(
     private playlistService: PlaylistService,
     private midiService: MidiService
   ) {
+    this.midiService.getController().setupBtn(0, 0, 8, new CallbackKey(() => this.previous(), KeyColor.hi_green, KeyColor.lo_amber));
+    this.midiPlayKey = new PlayKey(() => this.togglePlay());
+    this.midiService.getController().setupBtn(0, 1, 8, this.midiPlayKey);
+    this.midiService.getController().setupBtn(0, 2, 8, new CallbackKey(() => this.next(), KeyColor.hi_green, KeyColor.lo_amber));
   }
 
   ngOnInit() {
@@ -34,8 +39,10 @@ export class PlaylistPlayerComponent implements OnInit {
         this.playlists = playlists;
         this.playlists.forEach((element, index) => {
           var tempKey = new GroupKey("playlists", index);
-          tempKey.onActivePush= ()=>{this.togglePlay()};
-          tempKey.onInactivePush = ()=>{this.setPlaylist(element)};
+          tempKey.onActivePush = () => {
+            this.togglePlay()
+          };
+          tempKey.onInactivePush = () => { this.setPlaylist(element) };
           this.midiService.getController().setupBtn(0, 0, index, tempKey);
         })
 
@@ -52,12 +59,11 @@ export class PlaylistPlayerComponent implements OnInit {
       this.currentPlayer.fadeOut();
     }
     this.currentPlayer = new DeckPlayer();
-    var fadeInPlayer = this.currentPlayer;
-    fadeInPlayer.timeUpdate = function (currentTime, duration) {
+    this.currentPlayer.timeUpdate = function (currentTime, duration) {
       this.progressUpdate(currentTime / duration);
     }.bind(this);
-    fadeInPlayer.setPlaylist(playlist);
-    fadeInPlayer.fadeIn(this.volume);
+    this.currentPlayer.setPlaylist(playlist);
+    this.currentPlayer.fadeIn(this.volume);
 
     this.onPlay();
   }
@@ -93,11 +99,13 @@ export class PlaylistPlayerComponent implements OnInit {
   }
 
   onPause() {
-
+    this.midiPlayKey.playing=false;
+    this.midiPlayKey.setled();
   }
 
   onPlay() {
-
+    this.midiPlayKey.playing=true;
+    this.midiPlayKey.setled();
   }
 
 

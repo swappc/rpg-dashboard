@@ -60,7 +60,7 @@ export class NLM {
 
 }
 
-enum KeyColor {
+export enum KeyColor {
     black = 4,
 
     lo_red = 1 + 4,
@@ -134,6 +134,7 @@ export class PushKey extends Key {
         private colorpush: KeyColor
     ) {
         super();
+        this.setColor(this.colordef);
     }
 
     onPush() {
@@ -209,8 +210,8 @@ export class SliderKey extends Key {
         this.setled();
         if (SliderKey.keys[group] == undefined) {
             SliderKey.keys[group] = new Array();
-            SliderKey.keys[group][pos] = this;
         }
+        SliderKey.keys[group][pos] = this;
     }
 
     setled() {
@@ -248,8 +249,8 @@ export class GroupKey extends Key {
         this.setled();
         if (GroupKey.keys[group] == undefined) {
             GroupKey.keys[group] = new Array();
-            GroupKey.keys[group][pos] = this;
         }
+        GroupKey.keys[group][pos] = this;
     }
 
     setled() {

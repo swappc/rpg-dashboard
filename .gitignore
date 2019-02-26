@@ -5,3 +5,4 @@
 client-angular/dist
 client-angular/node_modules
 server/assets
+server/playlist.json

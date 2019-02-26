@@ -45,9 +45,9 @@ if (args['dbinit']) {
     db.run('DELETE FROM library')
       .run("INSERT INTO library(folder) VALUES (?)", [libraryPath]);
 
-    db.all('SELECT * FROM library', [], (err, rows) => {
+    db.all('SELECT rowid, folder FROM library', [], (err, rows) => {
       rows.forEach((row) => {
-        processDirectory(row.folder, '/api/assets');
+        processDirectory(row.folder, '/assets/library'+row.rowid);
       })
     });
 
@@ -55,7 +55,6 @@ if (args['dbinit']) {
       if (!row) {
         db.run('DELETE FROM playlists');
         fs.readFile(serverRoot + '/playlists.json', 'utf8', function (err, contents) {
-          console.log(contents);
           JSON.parse(contents).forEach((playlist, index) => {
             db.run('INSERT INTO playlists(id, name) VALUES (?,?)', [index, playlist.name]);
             var playlistFiles = playlist.files.map((track) => track.name);
@@ -88,10 +87,10 @@ app.get('/', (request, response) => {
 
 if (args['angular']) {
   app.use('/', express.static("./client-angular/dist/client-angular/"))
-  db.all('SELECT * FROM library', [], (err, rows) => {
+  db.all('SELECT rowid, folder FROM library', [], (err, rows) => {
     rows.forEach((row) => {
       if (row.folder) {
-        app.use('/api/assets', express.static(row.folder))
+        app.use('/assets/library'+row.rowid, express.static(row.folder))
       }
     })
 
@@ -103,7 +102,7 @@ if (args['angular']) {
   app.use(function (req, res, next) {
     var url = require("url");
     var result = url.parse(req.url);
-    if (!result.path.startsWith("/api")) {
+    if (!result.path.startsWith("/api")&& !result.path.startsWith("/assets")) {
       res.sendfile('./client-angular/dist/client-angular/')
     }
     else {

@@ -52,10 +52,9 @@ if (args['dbinit']) {
       })
     });
 
-    db.run('DELETE FROM playlists');
-    db.run('DELETE FROM playlist_tracks');
-
     fs.readFile(serverRoot + '/playlists.json', 'utf8', function (err, contents) {
+      db.run('DELETE FROM playlists');
+      db.run('DELETE FROM playlist_tracks');
       JSON.parse(contents).forEach((playlist, index) => {
         db.run('INSERT INTO playlists(id, name) VALUES (?,?)', [index, playlist.name]);
         var playlistFiles = playlist.files.map((track) => track.name);

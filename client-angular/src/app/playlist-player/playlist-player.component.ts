@@ -81,7 +81,7 @@ export class PlaylistPlayerComponent implements OnInit {
     }
     this.currentPlayer = new DeckPlayer();
     this.currentPlayer.onTrackLoaded = function(){
-      this.currentTrack = this.currentPlayer.currentTrack;
+      this.currentTrack = this.currentPlayer.currentTrack.name;
     }.bind(this);
     this.currentPlayer.timeUpdate = function (currentTime, duration) {
       this.progressUpdate(currentTime / duration);

@@ -22,6 +22,7 @@ export class PlaylistPlayerComponent implements OnInit {
   volumeKeys: SliderKey[]
   playlistKeyGroup = "playlists";
   currentPlaylistKey: GroupKey;
+  trackDuration = 0;
 
 
   constructor(
@@ -92,9 +93,7 @@ export class PlaylistPlayerComponent implements OnInit {
     this.currentPlayer.onTrackLoaded = function () {
       this.currentTrack = this.currentPlayer.currentTrack.name;
     }.bind(this);
-    this.currentPlayer.timeUpdate = function (currentTime, duration) {
-      this.progressUpdate(currentTime / duration);
-    }.bind(this);
+    this.currentPlayer.timeUpdate = this.progressUpdate.bind(this);
     this.currentPlayer.setPlaylist(playlist);
     this.currentPlayer.fadeIn(this.volume);
 
@@ -165,13 +164,16 @@ export class PlaylistPlayerComponent implements OnInit {
     })
   }
 
-  progressUpdate(percentage) {
-    this.currentProgress = percentage * 100;
+  progressUpdate(currentTime, duration) {
+    if (duration) {
+      this.trackDuration = Math.floor(duration);
+      this.currentProgress = Math.floor(currentTime);
+    }
 
   }
   setPosition(event: any) {
     if (this.currentPlayer) {
-      this.currentPlayer.setPosition(event.value / 100);
+      this.currentPlayer.setPosition(event.value);
       this.currentProgress = event.value;
     }
   }
@@ -183,10 +185,18 @@ export class PlaylistPlayerComponent implements OnInit {
     return Math.floor(value * 100) + '%';
   }
 
-  formatCurrentTimeLabel(value: number | null) {
-    if (!value) {
-      return '0:00';
+  formatSecondString(value: number){
+    var seconds = value%60;
+    var minutes = Math.floor(value/60%60);
+    var hours = Math.floor(value/3600%60);
+    var timeParts = [];
+    if(hours>0)
+    {
+      timeParts.push(hours.toString().padStart(2,'0'));
     }
-    return 'test';
+    timeParts.push(minutes.toString().padStart(2,'0'));
+    timeParts.push(seconds.toString().padStart(2,'0'));
+    return timeParts.join(':');
+
   }
 }

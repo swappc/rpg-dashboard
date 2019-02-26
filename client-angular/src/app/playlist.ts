@@ -122,8 +122,8 @@ export class DeckPlayer {
     timeUpdate(currentTime:number, duration:number) {
 
     }
-    setPosition(percentage: number) {
-        this.playerElement.currentTime = this.playerElement.duration * percentage;
+    setPosition(position: number) {
+        this.playerElement.currentTime = position;
     }
     onTrackLoaded(){
 

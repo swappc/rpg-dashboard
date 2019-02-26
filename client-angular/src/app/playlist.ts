@@ -11,7 +11,7 @@ export class PlaylistTrack {
 export class DeckPlayer {
     playlist: Playlist;
     currentSong = 0;
-    currentTrack: string;
+    currentTrack: PlaylistTrack;
     playerElement = new Audio();
     volume = 0;
     timer = null;
@@ -30,8 +30,8 @@ export class DeckPlayer {
 
     loadTrack(trackNum: number) {
         this.currentSong = trackNum;
-        this.currentTrack = this.playlist.files[this.currentSong].file;
-        this.playerElement.src = this.currentTrack;
+        this.currentTrack = this.playlist.files[this.currentSong];
+        this.playerElement.src = this.currentTrack.file;
         this.onTrackLoaded();
     }
     playNext() {

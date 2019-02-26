@@ -45,13 +45,18 @@ if (args['dbinit']) {
     db.run('DELETE FROM library')
       .run("INSERT INTO library(folder) VALUES (?)", [libraryPath]);
 
+<<<<<<< HEAD
     db.all('SELECT * FROM library', [], (err, rows) => {
       db.run('DELETE FROM library_tracks');
+=======
+    db.all('SELECT rowid, folder FROM library', [], (err, rows) => {
+>>>>>>> 2081d1b25ff3187ff108a71c90fedd5b33df4294
       rows.forEach((row) => {
-        processDirectory(row.folder, '/api/assets');
+        processDirectory(row.folder, '/assets/library'+row.rowid);
       })
     });
 
+<<<<<<< HEAD
     db.run('DELETE FROM playlists');
     db.run('DELETE FROM playlist_tracks');
 
@@ -67,6 +72,27 @@ if (args['dbinit']) {
             rows.forEach((row) => {
               insertValues.push(index);
               insertValues.push(row.rowid);
+=======
+    db.get('SELECT * FROM playlist_tracks', [], (err, row) => {
+      if (!row) {
+        db.run('DELETE FROM playlists');
+        fs.readFile(serverRoot + '/playlists.json', 'utf8', function (err, contents) {
+          JSON.parse(contents).forEach((playlist, index) => {
+            db.run('INSERT INTO playlists(id, name) VALUES (?,?)', [index, playlist.name]);
+            var playlistFiles = playlist.files.map((track) => track.name);
+            var placeholders = '(' + playlist.files.map(() => '?').join(',') + ')';
+
+            db.all('SELECT rowid FROM library_tracks WHERE trackName in ' + placeholders, playlistFiles, (err, rows) => {
+              if (rows) {
+                var insertValues = [];
+                rows.forEach((row) => {
+                  insertValues.push(index);
+                  insertValues.push(row.rowid);
+                })
+                var insertPlaceholders = rows.map(() => '(?,?)').join(',');
+                db.run('INSERT INTO playlist_tracks(playlistId, trackId) VALUES ' + insertPlaceholders, insertValues);
+              }
+>>>>>>> 2081d1b25ff3187ff108a71c90fedd5b33df4294
             })
             var insertPlaceholders = rows.map(() => '(?,?)').join(',');
             db.run('INSERT INTO playlist_tracks(playlistId, trackId) VALUES ' + insertPlaceholders, insertValues);
@@ -85,10 +111,10 @@ app.get('/', (request, response) => {
 
 if (args['angular']) {
   app.use('/', express.static("./client-angular/dist/client-angular/"))
-  db.all('SELECT * FROM library', [], (err, rows) => {
+  db.all('SELECT rowid, folder FROM library', [], (err, rows) => {
     rows.forEach((row) => {
       if (row.folder) {
-        app.use('/api/assets', express.static(row.folder))
+        app.use('/assets/library'+row.rowid, express.static(row.folder))
       }
     })
 
@@ -100,7 +126,7 @@ if (args['angular']) {
   app.use(function (req, res, next) {
     var url = require("url");
     var result = url.parse(req.url);
-    if (!result.path.startsWith("/api")) {
+    if (!result.path.startsWith("/api")&& !result.path.startsWith("/assets")) {
       res.sendfile('./client-angular/dist/client-angular/')
     }
     else {

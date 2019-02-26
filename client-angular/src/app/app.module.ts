@@ -11,13 +11,15 @@ import { PlaylistPlayerComponent } from './playlist-player/playlist-player.compo
 import { AppRoutingModule } from './app-routing.module';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { PlaylistManagerComponent } from './playlist-manager/playlist-manager.component';
+import { SamplerManagerComponent } from './sampler-manager/sampler-manager.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     PlaylistPlayerComponent,
     PageNotFoundComponent,
-    PlaylistManagerComponent
+    PlaylistManagerComponent,
+    SamplerManagerComponent
   ],
   imports: [
     BrowserModule,

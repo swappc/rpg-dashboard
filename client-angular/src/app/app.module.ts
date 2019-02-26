@@ -12,6 +12,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { PlaylistManagerComponent } from './playlist-manager/playlist-manager.component';
 import { SamplerManagerComponent } from './sampler-manager/sampler-manager.component';
+import { RouteReuseStrategy } from '@angular/router';
+import { CustomReuseStrategy } from './CustomRouteReuseStrategy';
 
 @NgModule({
   declarations: [
@@ -29,7 +31,7 @@ import { SamplerManagerComponent } from './sampler-manager/sampler-manager.compo
     HttpClientModule,
     AppRoutingModule
   ],
-  providers: [],
+  providers: [{ provide: RouteReuseStrategy, useClass: CustomReuseStrategy }],
   bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule { }

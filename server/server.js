@@ -48,7 +48,7 @@ if (args['dbinit']) {
     db.all('SELECT rowid, folder FROM library', [], (err, rows) => {
       db.run('DELETE FROM library_tracks');
       rows.forEach((row) => {
-        processDirectory(row.folder, '/assets/library'+row.rowid);
+        processDirectory(row.folder, '/assets/library' + row.rowid);
       })
       fs.readFile(serverRoot + '/playlists.json', 'utf8', function (err, contents) {
         db.run('DELETE FROM playlists');
@@ -57,7 +57,7 @@ if (args['dbinit']) {
           db.run('INSERT INTO playlists(id, name) VALUES (?,?)', [index, playlist.name]);
           var playlistFiles = playlist.files.map((track) => track.name);
           var placeholders = '(' + playlist.files.map(() => '?').join(',') + ')';
-  
+
           db.all('SELECT rowid FROM library_tracks WHERE trackName in ' + placeholders, playlistFiles, (err, rows) => {
             if (rows && rows.length > 0) {
               var insertValues = [];
@@ -73,7 +73,7 @@ if (args['dbinit']) {
       });
     });
 
-  
+
   })
 }
 
@@ -88,7 +88,7 @@ if (args['angular']) {
   db.all('SELECT rowid, folder FROM library', [], (err, rows) => {
     rows.forEach((row) => {
       if (row.folder) {
-        app.use('/assets/library'+row.rowid, express.static(row.folder))
+        app.use('/assets/library' + row.rowid, express.static(row.folder))
       }
     })
 
@@ -100,7 +100,7 @@ if (args['angular']) {
   app.use(function (req, res, next) {
     var url = require("url");
     var result = url.parse(req.url);
-    if (!result.path.startsWith("/api")&& !result.path.startsWith("/assets")) {
+    if (!result.path.startsWith("/api") && !result.path.startsWith("/assets")) {
       res.sendfile('./client-angular/dist/client-angular/')
     }
     else {

@@ -35,9 +35,9 @@ if (args['dbinit']) {
 
   db.serialize(() => {
     db.run('CREATE TABLE IF NOT EXISTS playlists (id INTEGER PRIMARY KEY, name TEXT NOT NULL)')
-      .run('CREATE TABLE IF NOT EXISTS playlist_tracks (trackId INTEGER NOT NULL, playlistId INTEGER NOT NULL)')
-      .run('CREATE TABLE IF NOT EXISTS library (folder TEXT NOT NULL)')
-      .run('CREATE TABLE IF NOT EXISTS library_tracks(trackName TEXT NOT NULL, trackFile TEXT NOT NULL)');
+      .run('CREATE TABLE IF NOT EXISTS playlist_tracks (trackId INTEGER NOT NULL, playlistId INTEGER NOT NULL, PRIMARY KEY (trackId, playlistId))')
+      .run('CREATE TABLE IF NOT EXISTS library (folder TEXT UNIQUE NOT NULL)')
+      .run('CREATE TABLE IF NOT EXISTS library_tracks(trackName TEXT UNIQUE NOT NULL, trackFile TEXT NOT NULL)');
 
     var libraryPath = args['library'] ? args['library'] : serverRoot + '/assets';
 
@@ -46,39 +46,36 @@ if (args['dbinit']) {
       .run("INSERT INTO library(folder) VALUES (?)", [libraryPath]);
 
     db.all('SELECT * FROM library', [], (err, rows) => {
+      db.run('DELETE FROM library_tracks');
       rows.forEach((row) => {
         processDirectory(row.folder, '/api/assets');
       })
     });
 
-    db.get('SELECT * FROM playlist_tracks', [], (err, row) => {
-      if (!row) {
-        db.run('DELETE FROM playlists');
-        fs.readFile(serverRoot + '/playlists.json', 'utf8', function (err, contents) {
-          console.log(contents);
-          JSON.parse(contents).forEach((playlist, index) => {
-            db.run('INSERT INTO playlists(id, name) VALUES (?,?)', [index, playlist.name]);
-            var playlistFiles = playlist.files.map((track) => track.name);
-            var placeholders = '(' + playlist.files.map(() => '?').join(',') + ')';
+    db.run('DELETE FROM playlists');
+    db.run('DELETE FROM playlist_tracks');
 
-            db.all('SELECT rowid FROM library_tracks WHERE trackName in ' + placeholders, playlistFiles, (err, rows) => {
-              if (rows) {
-                var insertValues = [];
-                rows.forEach((row) => {
-                  insertValues.push(index);
-                  insertValues.push(row.rowid);
-                })
-                var insertPlaceholders = rows.map(() => '(?,?)').join(',');
-                db.run('INSERT INTO playlist_tracks(playlistId, trackId) VALUES ' + insertPlaceholders, insertValues);
-              }
+    fs.readFile(serverRoot + '/playlists.json', 'utf8', function (err, contents) {
+      JSON.parse(contents).forEach((playlist, index) => {
+        db.run('INSERT INTO playlists(id, name) VALUES (?,?)', [index, playlist.name]);
+        var playlistFiles = playlist.files.map((track) => track.name);
+        var placeholders = '(' + playlist.files.map(() => '?').join(',') + ')';
+
+        db.all('SELECT rowid FROM library_tracks WHERE trackName in ' + placeholders, playlistFiles, (err, rows) => {
+          if (rows && rows.length > 0) {
+            var insertValues = [];
+            rows.forEach((row) => {
+              insertValues.push(index);
+              insertValues.push(row.rowid);
             })
-          });
-        });
-      }
-    })
+            var insertPlaceholders = rows.map(() => '(?,?)').join(',');
+            db.run('INSERT INTO playlist_tracks(playlistId, trackId) VALUES ' + insertPlaceholders, insertValues);
+          }
+        })
+      });
+    });
   })
 }
-
 
 let clientRoot = args['clientRoot'] ? args['clientRoot'] : '../client';
 

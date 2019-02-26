@@ -28,6 +28,15 @@
             "name": "Launch Angular Server",
             "program": "${workspaceFolder}/server/server.js",
             "args": [
+                "--angular=true"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Angular Server with dbinit",
+            "program": "${workspaceFolder}/server/server.js",
+            "args": [
                 "--angular=true",
                 "--dbinit"
             ]

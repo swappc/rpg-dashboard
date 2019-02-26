@@ -10,7 +10,7 @@ import { AppComponent } from './app.component';
 import { PlaylistPlayerComponent } from './playlist-player/playlist-player.component';
 import { AppRoutingModule } from './app-routing.module';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
-import { PlaylistManagerComponent } from './playlist-manager/playlist-manager.component';
+import { PlaylistManagerComponent, PlaylistManagerNewPlaylistDialog} from './playlist-manager/playlist-manager.component';
 import { SamplerManagerComponent } from './sampler-manager/sampler-manager.component';
 import { RouteReuseStrategy } from '@angular/router';
 import { CustomReuseStrategy } from './CustomRouteReuseStrategy';
@@ -21,6 +21,7 @@ import { CustomReuseStrategy } from './CustomRouteReuseStrategy';
     PlaylistPlayerComponent,
     PageNotFoundComponent,
     PlaylistManagerComponent,
+    PlaylistManagerNewPlaylistDialog,
     SamplerManagerComponent
   ],
   imports: [
@@ -31,6 +32,7 @@ import { CustomReuseStrategy } from './CustomRouteReuseStrategy';
     HttpClientModule,
     AppRoutingModule
   ],
+  entryComponents: [PlaylistManagerNewPlaylistDialog],
   providers: [{ provide: RouteReuseStrategy, useClass: CustomReuseStrategy }],
   bootstrap: [AppComponent]
 })

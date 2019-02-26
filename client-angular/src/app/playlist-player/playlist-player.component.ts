@@ -14,6 +14,7 @@ export class PlaylistPlayerComponent implements OnInit {
   playlists: Playlist[];
   currentTrack: string;
   currentPlayer: DeckPlayer;
+  otherPlayer: DeckPlayer;
   volume: number;
   currentProgress = 0;
   midiPlayKey: PlayKey;
@@ -77,10 +78,18 @@ export class PlaylistPlayerComponent implements OnInit {
     if (this.currentPlayer) {
       this.currentPlayer.timeUpdate = function (currentTime, duration) {
       }
+      this.currentPlayer.onTrackLoaded = function () {
+
+      }
       this.currentPlayer.fadeOut();
     }
-    this.currentPlayer = new DeckPlayer();
-    this.currentPlayer.onTrackLoaded = function(){
+    var tempPlayer = this.otherPlayer;
+    this.otherPlayer = this.currentPlayer;
+    this.currentPlayer = tempPlayer;
+    if (!this.currentPlayer) {
+      this.currentPlayer = new DeckPlayer();
+    }
+    this.currentPlayer.onTrackLoaded = function () {
       this.currentTrack = this.currentPlayer.currentTrack.name;
     }.bind(this);
     this.currentPlayer.timeUpdate = function (currentTime, duration) {
@@ -143,7 +152,7 @@ export class PlaylistPlayerComponent implements OnInit {
   }
   setVolume(targetVolume) {
     if (this.currentPlaylist) {
-      this.currentPlayer.fadeToTarget(targetVolume);
+      this.currentPlayer.fadeToTarget(targetVolume, false);
     }
     this.volume = targetVolume;
     this.onVolumeChange(targetVolume);
@@ -165,5 +174,19 @@ export class PlaylistPlayerComponent implements OnInit {
       this.currentPlayer.setPosition(event.value / 100);
       this.currentProgress = event.value;
     }
+  }
+
+  formatVolumeLabel(value: number | null) {
+    if (!value) {
+      return '0%';
+    }
+    return Math.floor(value * 100) + '%';
+  }
+
+  formatCurrentTimeLabel(value: number | null) {
+    if (!value) {
+      return '0:00';
+    }
+    return 'test';
   }
 }

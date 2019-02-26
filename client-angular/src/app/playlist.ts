@@ -65,17 +65,20 @@ export class DeckPlayer {
     }
     fadeIn(targetVolume: number) {
         this.playerElement.play();
-        this.fadeToTarget(targetVolume);
+        this.fadeToTarget(targetVolume, false);
     }
-    fadeToTarget(targetVolume:number) {
+    fadeToTarget(targetVolume:number, pauseOnComplete: boolean) {
         if (this.timer != null) {
             clearTimeout(this.timer);
         }
         this.volume = targetVolume;
-        this.fadeToVolume();
+        this.fadeToVolume(pauseOnComplete);
     }
-    fadeToVolume() {
+    fadeToVolume(pauseOnComplete: boolean) {
         if (this.volume == this.playerElement.volume) {
+            if(pauseOnComplete){
+                this.playerElement.pause();
+            }
             return;
         }
 
@@ -94,13 +97,13 @@ export class DeckPlayer {
         }
         this.playerElement.volume = newVolume
         if (this.volume != this.playerElement.volume) {
-            this.timer = setTimeout(() => { this.fadeToVolume() }, 10);
+            this.timer = setTimeout(() => { this.fadeToVolume(pauseOnComplete) }, 10);
         }
 
     }
     fadeOut() {
         console.log("Fading out Volume at: " + this.playerElement.volume);
-        this.fadeToTarget(0);
+        this.fadeToTarget(0, true);
     }
     setVolume(targetVolume:number) {
         this.playerElement.volume = targetVolume;

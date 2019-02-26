@@ -11,6 +11,7 @@ export class PlaylistTrack {
 export class DeckPlayer {
     playlist: Playlist;
     currentSong = 0;
+    currentTrack: string;
     playerElement = new Audio();
     volume = 0;
     timer = null;
@@ -28,7 +29,10 @@ export class DeckPlayer {
     }
 
     loadTrack(trackNum: number) {
-        this.playerElement.src = this.playlist.files[trackNum].file.substr(2);
+        this.currentSong = trackNum;
+        this.currentTrack = this.playlist.files[this.currentSong].file.substr(2);
+        this.playerElement.src = this.currentTrack;
+        this.onTrackLoaded();
     }
     playNext() {
         if (this.playlist.files.length === 0) {
@@ -117,6 +121,9 @@ export class DeckPlayer {
     }
     setPosition(percentage: number) {
         this.playerElement.currentTime = this.playerElement.duration * percentage;
+    }
+    onTrackLoaded(){
+
     }
 
 

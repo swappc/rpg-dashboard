@@ -73,7 +73,6 @@ export class PlaylistPlayerComponent implements OnInit {
   setPlaylist(playlist: Playlist): void {
     this.currentPlaylist = playlist.name;
     GroupKey.setGroupSelected(this.playlistKeyGroup, playlist.name);
-    this.currentTrack = playlist.files[0].file.substr(2);
 
     if (this.currentPlayer) {
       this.currentPlayer.timeUpdate = function (currentTime, duration) {
@@ -81,6 +80,9 @@ export class PlaylistPlayerComponent implements OnInit {
       this.currentPlayer.fadeOut();
     }
     this.currentPlayer = new DeckPlayer();
+    this.currentPlayer.onTrackLoaded = function(){
+      this.currentTrack = this.currentPlayer.currentTrack;
+    }.bind(this);
     this.currentPlayer.timeUpdate = function (currentTime, duration) {
       this.progressUpdate(currentTime / duration);
     }.bind(this);

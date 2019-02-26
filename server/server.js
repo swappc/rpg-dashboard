@@ -26,7 +26,7 @@ if (args['dbinit']) {
       var fsStats = fs.statSync(directory + '/' + obj);
       if (fsStats.isFile()) {
         var fileName = path.parse(obj).base;
-        db.run('INSERT INTO library_tracks(trackName, trackFile) VALUES (?,?)', [fileName, urlPath + '/' + obj]);
+        db.run('INSERT INTO library_tracks(trackName, trackFile) VALUES (?,?) ON CONFLICT(trackName) DO NOTHING', [fileName, urlPath + '/' + obj]);
       } else if (fsStats.isDirectory()) {
         processDirectory(directory + '/' + obj, urlPath + "/" + obj);
       }
@@ -50,29 +50,30 @@ if (args['dbinit']) {
       rows.forEach((row) => {
         processDirectory(row.folder, '/assets/library'+row.rowid);
       })
-    });
-
-    fs.readFile(serverRoot + '/playlists.json', 'utf8', function (err, contents) {
-      db.run('DELETE FROM playlists');
-      db.run('DELETE FROM playlist_tracks');
-      JSON.parse(contents).forEach((playlist, index) => {
-        db.run('INSERT INTO playlists(id, name) VALUES (?,?)', [index, playlist.name]);
-        var playlistFiles = playlist.files.map((track) => track.name);
-        var placeholders = '(' + playlist.files.map(() => '?').join(',') + ')';
-
-        db.all('SELECT rowid FROM library_tracks WHERE trackName in ' + placeholders, playlistFiles, (err, rows) => {
-          if (rows && rows.length > 0) {
-            var insertValues = [];
-            rows.forEach((row) => {
-              insertValues.push(index);
-              insertValues.push(row.rowid);
-            })
-            var insertPlaceholders = rows.map(() => '(?,?)').join(',');
-            db.run('INSERT INTO playlist_tracks(playlistId, trackId) VALUES ' + insertPlaceholders, insertValues);
-          }
-        })
+      fs.readFile(serverRoot + '/playlists.json', 'utf8', function (err, contents) {
+        db.run('DELETE FROM playlists');
+        db.run('DELETE FROM playlist_tracks');
+        JSON.parse(contents).forEach((playlist, index) => {
+          db.run('INSERT INTO playlists(id, name) VALUES (?,?)', [index, playlist.name]);
+          var playlistFiles = playlist.files.map((track) => track.name);
+          var placeholders = '(' + playlist.files.map(() => '?').join(',') + ')';
+  
+          db.all('SELECT rowid FROM library_tracks WHERE trackName in ' + placeholders, playlistFiles, (err, rows) => {
+            if (rows && rows.length > 0) {
+              var insertValues = [];
+              rows.forEach((row) => {
+                insertValues.push(index);
+                insertValues.push(row.rowid);
+              })
+              var insertPlaceholders = rows.map(() => '(?,?)').join(',');
+              db.run('INSERT INTO playlist_tracks(playlistId, trackId) VALUES ' + insertPlaceholders, insertValues);
+            }
+          })
+        });
       });
     });
+
+  
   })
 }
 

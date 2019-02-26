@@ -276,16 +276,13 @@ export class GroupKey extends Key {
 
     setSelected(selectedId) {
         this.selected = selectedId == this.id;
-        if(this.selected){
-            this.active = !this.active;
-        }else{
+        if(!this.selected){
             this.active=false;
         }
         this.setled();
     }
 
     onPush() {
-        var targetId = this.id;
         // Was it already selected?
         if(this.selected){
             this.onSelectedPush();
@@ -294,6 +291,11 @@ export class GroupKey extends Key {
         }
         GroupKey.setGroupSelected(this.group, this.id);
 
+    }
+
+    setActive(active: boolean){
+        this.active=active;
+        this.setled();
     }
 
     onSelectedPush(){

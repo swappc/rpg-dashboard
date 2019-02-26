@@ -20,6 +20,7 @@ export class PlaylistPlayerComponent implements OnInit {
   midiController: NLM;
   volumeKeys: SliderKey[]
   playlistKeyGroup = "playlists";
+  currentPlaylistKey: GroupKey;
 
 
   constructor(
@@ -55,9 +56,14 @@ export class PlaylistPlayerComponent implements OnInit {
         this.playlists.forEach((element, index) => {
           var tempKey = new GroupKey(this.playlistKeyGroup, element.name);
           tempKey.onSelectedPush = () => {
+            this.currentPlaylistKey = tempKey;
             this.togglePlay()
           };
-          tempKey.onUnSelectedPush = () => { this.setPlaylist(element) };
+          tempKey.onUnSelectedPush = () => {
+
+            this.currentPlaylistKey = tempKey;
+            this.setPlaylist(element);
+          };
           this.midiController.setupBtn(0, 0, index, tempKey);
         })
 
@@ -117,11 +123,17 @@ export class PlaylistPlayerComponent implements OnInit {
   onPause() {
     this.midiPlayKey.playing = false;
     this.midiPlayKey.setled();
+    if (this.currentPlaylistKey) {
+      this.currentPlaylistKey.setActive(false);
+    }
   }
 
   onPlay() {
     this.midiPlayKey.playing = true;
     this.midiPlayKey.setled();
+    if (this.currentPlaylistKey) {
+      this.currentPlaylistKey.setActive(true);
+    }
   }
 
   changeVolume(event: any) {

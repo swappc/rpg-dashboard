@@ -30,7 +30,7 @@ export class DeckPlayer {
 
     loadTrack(trackNum: number) {
         this.currentSong = trackNum;
-        this.currentTrack = this.playlist.files[this.currentSong].file.substr(2);
+        this.currentTrack = this.playlist.files[this.currentSong].file;
         this.playerElement.src = this.currentTrack;
         this.onTrackLoaded();
     }

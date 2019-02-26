@@ -28,8 +28,8 @@
             "name": "Launch Angular Server",
             "program": "${workspaceFolder}/server/server.js",
             "args": [
-                "--library=${workspaceFolder}/client/public/music",
-                "--angular=true"
+                "--angular=true",
+                "--dbinit"
             ]
         }
     ]

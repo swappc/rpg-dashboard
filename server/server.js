@@ -9,7 +9,7 @@ var fs = require('fs');
 var path = require('path');
 const args = require('minimist')(process.argv.slice(2))
 
-let serverRoot = args['serverRoot'] ? args['serverRoot'] : './server/';
+let serverRoot = args['serverRoot'] ? args['serverRoot'] : './server';
 
 let db = new sqlite3.Database(serverRoot + '/db/playlists.db', (err) => {
   if (err) {
@@ -19,16 +19,16 @@ let db = new sqlite3.Database(serverRoot + '/db/playlists.db', (err) => {
 });
 
 if (args['dbinit']) {
-  function processDirectory(directory) {
+  function processDirectory(directory, urlPath) {
 
     var listings = fs.readdirSync(directory);
     listings.forEach((obj) => {
       var fsStats = fs.statSync(directory + '/' + obj);
       if (fsStats.isFile()) {
         var fileName = path.parse(obj).base;
-        db.run('INSERT INTO library_tracks(trackName, trackFile) VALUES (?,?)', [fileName, directory + '/' + obj]);
+        db.run('INSERT INTO library_tracks(trackName, trackFile) VALUES (?,?)', [fileName, urlPath + '/' + obj]);
       } else if (fsStats.isDirectory()) {
-        processDirectory(directory + '/' + obj);
+        processDirectory(directory + '/' + obj, urlPath + "/" + obj);
       }
     })
   }
@@ -39,23 +39,22 @@ if (args['dbinit']) {
       .run('CREATE TABLE IF NOT EXISTS library (folder TEXT NOT NULL)')
       .run('CREATE TABLE IF NOT EXISTS library_tracks(trackName TEXT NOT NULL, trackFile TEXT NOT NULL)');
 
+    var libraryPath = args['library'] ? args['library'] : serverRoot + '/assets';
 
 
-    if (args['library']) {
-      db.run('DELETE FROM library')
-        .run("INSERT INTO library(folder) VALUES (?)", [args['library']]);
-    }
+    db.run('DELETE FROM library')
+      .run("INSERT INTO library(folder) VALUES (?)", [libraryPath]);
 
     db.all('SELECT * FROM library', [], (err, rows) => {
       rows.forEach((row) => {
-        processDirectory(row.folder);
+        processDirectory(row.folder, '/api/assets');
       })
     });
 
     db.get('SELECT * FROM playlist_tracks', [], (err, row) => {
       if (!row) {
         db.run('DELETE FROM playlists');
-        fs.readFile('playlists.json', 'utf8', function (err, contents) {
+        fs.readFile(serverRoot + '/playlists.json', 'utf8', function (err, contents) {
           console.log(contents);
           JSON.parse(contents).forEach((playlist, index) => {
             db.run('INSERT INTO playlists(id, name) VALUES (?,?)', [index, playlist.name]);
@@ -89,7 +88,15 @@ app.get('/', (request, response) => {
 
 if (args['angular']) {
   app.use('/', express.static("./client-angular/dist/client-angular/"))
-  app.use('/public/music', express.static("./client/public/music"))
+  db.all('SELECT * FROM library', [], (err, rows) => {
+    rows.forEach((row) => {
+      if (row.folder) {
+        app.use('/api/assets', express.static(row.folder))
+      }
+    })
+
+  })
+
 
   app.use('/index.html', express.static("./client-angular/dist/client-angular/index.html"))
 

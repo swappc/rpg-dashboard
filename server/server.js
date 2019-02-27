@@ -5,6 +5,10 @@ app.use(cors());
 const port = 3000
 const sqlite3 = require('sqlite3').verbose();
 
+var bodyParser = require('body-parser');
+app.use(bodyParser.json()); // support json encoded bodies
+app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
+
 var fs = require('fs');
 var path = require('path');
 const args = require('minimist')(process.argv.slice(2))
@@ -118,14 +122,33 @@ if (args['angular']) {
 }
 
 
+app.post('/api/playlists', (request, response) => {
 
+  console.log(request);
+  console.log(request.body);
+  var name = request.body.name;
+  db.run('INSERT INTO playlists(name) VALUES (?)', [name], (result, err) => {
+    db.get("SELECT last_insert_rowid() as 'id' FROM playlists", [], (err, row) => {
+      var playlist = {};
+      playlist.name = name;
+      playlist.id = row.id;
+      playlist.files = [];
+  
+      response.status(200).json(playlist);
+    });
+  });
+  
+});
 
 app.get('/api/playlists', (request, response) => {
 
   db.all(
-    "SELECT p.name, lt.trackName, lt.trackFile \
-  FROM playlist_tracks pt \
-  JOIN playlists p on p.id=pt.playlistId \
+    "SELECT p.name, \
+            p.id, \
+            lt.trackName, \
+            lt.trackFile \
+  FROM playlists p \
+  LEFT JOIN playlist_tracks pt on p.id=pt.playlistId \
   JOIN library_tracks lt ON lt.rowid = pt.trackId \
   order by p.name", [], (err, rows) => {
 
@@ -136,6 +159,7 @@ app.get('/api/playlists', (request, response) => {
           playlist = {};
           retVal[row.name] = playlist;
           playlist.name = row.name;
+          playlist.id = row.id;
           playlist.files = [];
         }
         var track = {};

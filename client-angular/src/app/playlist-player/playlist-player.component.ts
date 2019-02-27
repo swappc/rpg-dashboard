@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Playlist, DeckPlayer } from '../playlist'
-import { PlaylistService } from '../playlist-service.service';
 import { MidiService } from '../midi.service';
 import { GroupKey, CallbackKey, KeyColor, PlayKey, SliderKey, NLM } from '../midi-controller';
+import { LibraryService } from '../library.service';
 
 @Component({
   selector: 'app-playlist-player',
@@ -26,7 +26,7 @@ export class PlaylistPlayerComponent implements OnInit {
 
 
   constructor(
-    private playlistService: PlaylistService,
+    private libraryService: LibraryService,
     midiService: MidiService
   ) {
     this.midiController = midiService.getController();
@@ -52,7 +52,7 @@ export class PlaylistPlayerComponent implements OnInit {
   }
 
   getPlaylists(): void {
-    this.playlistService.getPlaylists()
+    this.libraryService.getPlaylists()
       .subscribe(playlists => {
         this.playlists = playlists;
         this.playlists.forEach((element, index) => {

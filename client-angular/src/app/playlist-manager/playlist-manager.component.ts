@@ -1,7 +1,7 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { Playlist } from '../playlist'
 import { MatOptionSelectionChange, MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
-import { PlaylistService } from '../playlist-service.service';
+import { LibraryService } from '../library.service';
 
 export interface DialogData {
   name: string;
@@ -29,14 +29,14 @@ export class PlaylistManagerComponent implements OnInit {
 
   constructor(
     public dialog: MatDialog,
-    private playlistService: PlaylistService) { }
+    private libraryService: LibraryService) { }
 
   ngOnInit() {
     this.getPlaylists();
   }
 
   getPlaylists() {
-    this.playlistService.getPlaylists()
+    this.libraryService.getPlaylists()
       .subscribe(playlists => {
         this.playlists = playlists;
         this.playlists.forEach((element, index) => {
@@ -64,7 +64,7 @@ export class PlaylistManagerComponent implements OnInit {
       if (result) {
         var playlist = new Playlist();
         playlist.name = result;
-        this.playlistService.createPlaylist(playlist)
+        this.libraryService.createPlaylist(playlist)
           .subscribe(playlist => {
             this.playlists.push(playlist);
             this.playlists.sort((a, b) => {

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Playlist } from './playlist'
-import { HttpClient, HttpHeaders }    from '@angular/common/http';
+import { Playlist } from './playlist';
 import { Observable } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -12,9 +12,10 @@ const httpOptions = {
 @Injectable({
   providedIn: 'root'
 })
-export class PlaylistService{
+export class LibraryService {
 
   constructor(
+
     private http: HttpClient
   ) { }
 
@@ -26,5 +27,4 @@ export class PlaylistService{
     console.log(playlist);
     return this.http.post<Playlist>('http://localhost:3000/api/playlists', playlist, httpOptions);
   } 
-
 }

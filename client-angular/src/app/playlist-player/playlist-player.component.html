@@ -1,24 +1,26 @@
-<mat-grid-list cols="6" rowHeight="100px">
+<mat-grid-list cols="6" rowHeight="64px">
   <mat-grid-tile colspan="3" rowspan="1">
-    Playlist:
-    <label>{{currentPlaylist}}</label>
+    <h2>Playlist: {{currentPlaylist}}</h2>
   </mat-grid-tile>
   <mat-grid-tile colspan="3" rowspan="1">
-    Now playing:
-    <label>{{currentTrack}}</label>
+    <h2>Now playing: {{currentTrack}}</h2>
   </mat-grid-tile>
 
-  <mat-grid-tile colspan="4" rowspan="1">
-    <button id="prevTrackButton" (click)="previous()" [disabled]="!currentPlayer">
+  <mat-grid-tile colspan="2" rowspan="1">
+    <button mat-button id="prevTrackButton" (click)="previous()" [disabled]="!currentPlayer">
       <mat-icon>skip_previous</mat-icon>
     </button>
-    <button id="playPauseButton" (click)="togglePlay()" [disabled]="!currentPlayer">
+    <button mat-button id="playPauseButton" (click)="togglePlay()" [disabled]="!currentPlayer">
       <mat-icon *ngIf="!isPlaying()">play_arrow</mat-icon>
       <mat-icon *ngIf="isPlaying()">pause</mat-icon>
     </button>
-    <button id="nextTrackButton" (click)="next()" [disabled]="!currentPlayer">
+    <button mat-button id="nextTrackButton" (click)="next()" [disabled]="!currentPlayer">
       <mat-icon>skip_next</mat-icon>
     </button>
+  </mat-grid-tile>
+
+  <mat-grid-tile colspan="2" rowspan="1">
+
     <label>{{formatSecondString(this.currentProgress)}}</label>
 
     <mat-slider min="0" [max]="trackDuration" [value]="currentProgress" (input)="setPosition($event)"></mat-slider>
@@ -26,6 +28,7 @@
 
   </mat-grid-tile>
   <mat-grid-tile colspan="2" rowspan="1">
+    <mat-icon>volume_up</mat-icon>
     <mat-slider thumbLabel [displayWith]="formatVolumeLabel" min="0" step=".01" max="1" [value]="volume"
       (input)="changeVolume($event)"></mat-slider>
   </mat-grid-tile>

@@ -38,7 +38,7 @@ if (args['dbinit']) {
   }
 
   db.serialize(() => {
-    db.run('CREATE TABLE IF NOT EXISTS playlists (id INTEGER PRIMARY KEY, name TEXT NOT NULL)')
+    db.run('CREATE TABLE IF NOT EXISTS playlists (id INTEGER PRIMARY KEY, name TEXT NOT NULL, priority INTEGER UNIQUE)')
       .run('CREATE TABLE IF NOT EXISTS playlist_tracks (trackId INTEGER NOT NULL, playlistId INTEGER NOT NULL, PRIMARY KEY (trackId, playlistId))')
       .run('CREATE TABLE IF NOT EXISTS library (folder TEXT UNIQUE NOT NULL)')
       .run('CREATE TABLE IF NOT EXISTS library_tracks(trackName TEXT UNIQUE NOT NULL, trackFile TEXT NOT NULL)');
@@ -121,38 +121,107 @@ if (args['angular']) {
 
 }
 
-
 app.post('/api/playlists', (request, response) => {
 
-  console.log(request);
-  console.log(request.body);
   var name = request.body.name;
-  db.run('INSERT INTO playlists(name) VALUES (?)', [name], (result, err) => {
+  db.run('INSERT INTO playlists(name) VALUES (?)', [name], (err, row) => {
     db.get("SELECT last_insert_rowid() as 'id' FROM playlists", [], (err, row) => {
       var playlist = {};
       playlist.name = name;
       playlist.id = row.id;
       playlist.files = [];
 
-      response.status(200).json(playlist);
+      response.status(201).json(playlist);
     });
   });
 
+});
+
+app.delete('/api/playlists/:playlistId', (request, response) => {
+  var playlistId = request.param('playlistId');
+
+  db.get('SELECT id, name, priority FROM playlists WHERE id = ?', [playlistId], (err, row) => {
+    if (err) {
+      response.status(500).json(err);
+      return;
+    }
+
+    if (!row) {
+      response.status(404).json("Not Found");
+      return;
+    }
+
+    var returnRes = row;
+    db.run('DELETE FROM playlists WHERE id = ?', [playlistId], (err, row) => {
+      if (err) {
+        response.status(500).json(err);
+        return;
+      }
+
+      db.run('DELETE FROM playlist_tracks WHERE playlistId = ?', [playlistId], (err, row) => {
+        if (err) {
+          response.status(500).json(err);
+          return;
+        }
+
+
+        response.status(200).json(returnRes);
+
+      });
+    });
+  });
+
+});
+
+app.patch('/api/playlists/:playlistId', (request, response) => {
+  var playlistId = request.param('playlistId');
+  var name = request.body.name;
+  var priority = request.body.priority;
+  var sql = '';
+  var values = [];
+  if (name) {
+    sql += ' name = ? ';
+    values.push(name);
+  }
+  if (priority && priority > 0) {
+    sql += (sql.length > 0 ? ',' : '') + ' priority = ? ';
+    values.push(priority);
+  }
+
+  if (sql.length > 0 && values.length > 0) {
+    values.push(playlistId);
+    db.run('UPDATE playlists SET ' + sql + 'WHERE id = ?', values, (result, err) => {
+      if (err) {
+        response.status(500).json(err);
+        return;
+      }
+
+      response.status(200).json(request.body);
+
+    });
+  }
 });
 
 app.get('/api/playlists', (request, response) => {
 
   db.all(
     "SELECT p.name, \
-            p.id \
+            p.id, \
+            p.priority \
   FROM playlists p \
   order by p.name", [], (err, rows) => {
+
+      if (err) {
+        response.status(500).json(err);
+        return;
+      }
 
       var retVal = [];
       rows.forEach((row) => {
         var playlist = {};
         playlist.name = row.name;
         playlist.id = row.id;
+        playlist.priority = row.priority;
         retVal.push(playlist);
       })
 
@@ -173,7 +242,7 @@ app.get('/api/playlists/:playlistId/tracks', (request, response) => {
     order by lt.trackName", [playlistId], (err, rows) => {
 
         if (err) {
-          response.status(500).message(err);
+          response.status(500).json(err);
           return;
         }
 

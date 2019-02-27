@@ -1,12 +1,20 @@
 <h3 mat-header style="padding: 10px; padding-left: 50px">Playlist Manager</h3>
-<mat-grid-list cols="3" rowHeight="1:1">
+<mat-grid-list cols="3" rowHeight="2:1">
   <mat-grid-tile>
     <button mat-icon-button (click)="newPlaylistClicked()">
       <mat-icon>playlist_add</mat-icon>
     </button>
+    <button mat-icon-button (click)="editPlaylistClicked()" [disabled]="playlistNotSelected()">
+      <mat-icon>edit</mat-icon>
+    </button>
+    <button mat-icon-button (click)="deletePlaylistClicked()" [disabled]="playlistNotSelected()">
+      <mat-icon>delete</mat-icon>
+    </button>
+  <br/>
     <mat-form-field>
       <mat-select placeholder="Playlist" [(value)]="selected">
-        <mat-option *ngFor="let playlist of playlists" [value]="playlist.name" (onSelectionChange)="playlistChanged($event, playlist)">
+        <mat-option *ngFor="let playlist of playlists" [value]="playlist.name"
+          (onSelectionChange)="playlistChanged($event, playlist)">
           {{ playlist.name }}
         </mat-option>
       </mat-select>

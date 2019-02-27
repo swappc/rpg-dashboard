@@ -1,6 +1,14 @@
-.example-container {
+.sampler-container {
+  width:auto;
+    max-width: 70%;
+    margin: 0 25px 25px 0;
+    display: inline-block;
+    vertical-align: top;
+  }
+
+  .library-container {
     width: 400px;
-    max-width: 100%;
+    max-width: 30%;
     margin: 0 25px 25px 0;
     display: inline-block;
     vertical-align: top;

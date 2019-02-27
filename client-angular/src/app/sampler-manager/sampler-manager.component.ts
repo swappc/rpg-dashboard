@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { PlaylistTrack } from '../playlist';
 import { LibraryService } from '../library.service';
 import { SamplerPlayer } from '../sampler';
@@ -15,7 +15,8 @@ export class SamplerManagerComponent implements OnInit {
   samplers: SamplerPlayer[][]
 
   constructor(
-    private libraryService: LibraryService
+    private libraryService: LibraryService,
+    private changeDetector: ChangeDetectorRef
   ) {
     this.libraryService.getLibraryTracks().subscribe(tracks => {
       this.allTracks = tracks;
@@ -27,9 +28,22 @@ export class SamplerManagerComponent implements OnInit {
       this.samplers[col] = new Array();
       for (var row = 0; row < 8; row++) {
         this.samplers[col][row] = new SamplerPlayer();
+        this.samplers[col][row].onEnded = function(){
+          this.changeDetector.markForCheck();
+        }.bind(this);
       }
     }
 
+  }
+
+  getColor(sampler:SamplerPlayer){
+    if(sampler.isPlaying()){
+      return 'lightgreen';
+    }else if(sampler.playerElement.src){
+      return '#FFC200';
+    }else{
+      return 'lightgray';
+    }
   }
 
   drop(event) {

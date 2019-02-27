@@ -2,7 +2,7 @@
   <mat-drawer mode="side" opened> -->
 
 
-<div class="example-container">
+<div class="library-container">
   <mat-list role="list" class="example-list">
     <mat-list-item>
       <input matInput placeholder="Track Filter" [(ngModel)]="searchText">
@@ -13,13 +13,13 @@
     </div>
   </mat-list>
 </div>
-<div class="example-container">
+<div class="sampler-container">
   <!-- </mat-drawer>
   <mat-drawer-content> -->
   <mat-grid-list cols="4" rowHeight="1:1">
     <div *ngFor="let row of samplers">
       <div *ngFor="let col of row">
-        <mat-grid-tile [style.background]="col.isPlaying()?'lightgreen':'lightblue'" droppable (onDrop)="col.setTrack($event.dragData)" (click)="col.togglePlay()">
+        <mat-grid-tile [style.background]="getColor(col)" droppable (onDrop)="col.setTrack($event.dragData)" (click)="col.togglePlay()">
 
         </mat-grid-tile>
       </div>

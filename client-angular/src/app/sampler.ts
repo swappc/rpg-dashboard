@@ -4,7 +4,9 @@ export class SamplerPlayer {
     currentTrack: PlaylistTrack;
     playerElement = new Audio();
   
-    constructor() { }
+    constructor() { 
+        this.playerElement.onended = this.onEnded;
+    }
   
     setTrack(track: PlaylistTrack) {
         this.currentTrack = track;
@@ -53,6 +55,10 @@ export class SamplerPlayer {
   
     onPause(){
   
+    }
+
+    onEnded(){
+
     }
   
   }

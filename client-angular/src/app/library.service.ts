@@ -24,9 +24,16 @@ export class LibraryService {
   }
 
   createPlaylist(playlist: Playlist): Observable<Playlist> {
-    console.log(playlist);
     return this.http.post<Playlist>('/api/playlists', playlist, httpOptions);
-  } 
+  }
+
+  deletePlaylist(playlist: Playlist): Observable<Playlist> {
+    return this.http.delete<Playlist>('/api/playlists/' + playlist.id);
+  }
+
+  updatePlaylist(playlist: Playlist): Observable<Playlist> {
+    return this.http.patch<Playlist>('/api/playlists/' + playlist.id, playlist, httpOptions);
+  }
 
   getPlaylistTracks(playlistId: number): Observable<PlaylistTrack[]>{
     return this.http.get<PlaylistTrack[]>('/api/playlists/'+playlistId+'/tracks')

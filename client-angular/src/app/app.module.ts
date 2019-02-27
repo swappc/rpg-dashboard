@@ -3,8 +3,9 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { CustomMaterialModule } from './custom-material.module';
+import { RouteReuseStrategy } from '@angular/router';
 
+import { CustomMaterialModule } from './custom-material.module';
 import { AppComponent } from './app.component';
 
 import { PlaylistPlayerComponent } from './playlist-player/playlist-player.component';
@@ -12,10 +13,10 @@ import { AppRoutingModule } from './app-routing.module';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { PlaylistManagerComponent, PlaylistManagerNewPlaylistDialog} from './playlist-manager/playlist-manager.component';
 import { SamplerManagerComponent } from './sampler-manager/sampler-manager.component';
-import { RouteReuseStrategy } from '@angular/router';
 import { CustomReuseStrategy } from './CustomRouteReuseStrategy';
 import { TrackFilterPipe } from './track-filter.pipe';
 import { NgDragDropModule } from 'ng-drag-drop';
+import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { NgDragDropModule } from 'ng-drag-drop';
     PlaylistManagerComponent,
     PlaylistManagerNewPlaylistDialog,
     SamplerManagerComponent,
-    TrackFilterPipe
+    TrackFilterPipe,
+    ConfirmDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -36,7 +38,7 @@ import { NgDragDropModule } from 'ng-drag-drop';
     AppRoutingModule,
     NgDragDropModule.forRoot()
   ],
-  entryComponents: [PlaylistManagerNewPlaylistDialog],
+  entryComponents: [PlaylistManagerNewPlaylistDialog, ConfirmDialogComponent],
   providers: [{ provide: RouteReuseStrategy, useClass: CustomReuseStrategy }],
   bootstrap: [AppComponent]
 })

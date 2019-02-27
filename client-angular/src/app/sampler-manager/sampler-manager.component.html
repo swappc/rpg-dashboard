@@ -1,3 +1,30 @@
-<p>
-  sampler-manager works!
-</p>
+<!-- <mat-drawer-container class="example-container">
+  <mat-drawer mode="side" opened> -->
+
+
+<div class="example-container">
+  <mat-list role="list" class="example-list">
+    <mat-list-item>
+      <input matInput placeholder="Track Filter" [(ngModel)]="searchText">
+    </mat-list-item>
+    <div draggable [dragData]="track" *ngFor="let track of allTracks | trackFilter: searchText">
+      <mat-list-item role="listitem">{{track.name}}</mat-list-item>
+      <mat-divider></mat-divider>
+    </div>
+  </mat-list>
+</div>
+<div class="example-container">
+  <!-- </mat-drawer>
+  <mat-drawer-content> -->
+  <mat-grid-list cols="4" rowHeight="1:1">
+    <div *ngFor="let row of samplers">
+      <div *ngFor="let col of row">
+        <mat-grid-tile [style.background]="col.isPlaying()?'lightgreen':'lightblue'" droppable (onDrop)="col.setTrack($event.dragData)" (click)="col.togglePlay()">
+
+        </mat-grid-tile>
+      </div>
+    </div>
+  </mat-grid-list>
+</div>
+<!-- </mat-drawer-content>
+</mat-drawer-container> -->

@@ -14,6 +14,8 @@ import { PlaylistManagerComponent, PlaylistManagerNewPlaylistDialog} from './pla
 import { SamplerManagerComponent } from './sampler-manager/sampler-manager.component';
 import { RouteReuseStrategy } from '@angular/router';
 import { CustomReuseStrategy } from './CustomRouteReuseStrategy';
+import { TrackFilterPipe } from './track-filter.pipe';
+import { NgDragDropModule } from 'ng-drag-drop';
 
 @NgModule({
   declarations: [
@@ -22,7 +24,8 @@ import { CustomReuseStrategy } from './CustomRouteReuseStrategy';
     PageNotFoundComponent,
     PlaylistManagerComponent,
     PlaylistManagerNewPlaylistDialog,
-    SamplerManagerComponent
+    SamplerManagerComponent,
+    TrackFilterPipe
   ],
   imports: [
     BrowserModule,
@@ -30,7 +33,8 @@ import { CustomReuseStrategy } from './CustomRouteReuseStrategy';
     CustomMaterialModule,
     FormsModule,
     HttpClientModule,
-    AppRoutingModule
+    AppRoutingModule,
+    NgDragDropModule.forRoot()
   ],
   entryComponents: [PlaylistManagerNewPlaylistDialog],
   providers: [{ provide: RouteReuseStrategy, useClass: CustomReuseStrategy }],

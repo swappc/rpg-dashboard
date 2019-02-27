@@ -31,4 +31,8 @@ export class LibraryService {
   getPlaylistTracks(playlistId: number): Observable<PlaylistTrack[]>{
     return this.http.get<PlaylistTrack[]>('/api/playlists/'+playlistId+'/tracks')
   }
+
+  getLibraryTracks(): Observable<PlaylistTrack[]>{
+    return this.http.get<PlaylistTrack[]>('/api/library');
+  }
 }

@@ -133,49 +133,64 @@ app.post('/api/playlists', (request, response) => {
       playlist.name = name;
       playlist.id = row.id;
       playlist.files = [];
-  
+
       response.status(200).json(playlist);
     });
   });
-  
+
 });
 
 app.get('/api/playlists', (request, response) => {
 
   db.all(
     "SELECT p.name, \
-            p.id, \
-            lt.trackName, \
-            lt.trackFile \
+            p.id \
   FROM playlists p \
-  LEFT JOIN playlist_tracks pt on p.id=pt.playlistId \
-  JOIN library_tracks lt ON lt.rowid = pt.trackId \
   order by p.name", [], (err, rows) => {
 
-      var retVal = {};
+      var retVal = [];
       rows.forEach((row) => {
-        var playlist = retVal[row.name];
-        if (!playlist) {
-          playlist = {};
-          retVal[row.name] = playlist;
-          playlist.name = row.name;
-          playlist.id = row.id;
-          playlist.files = [];
-        }
-        var track = {};
-        track.name = row.trackName;
-        track.file = row.trackFile;
-        playlist.files.push(track);
+        var playlist = {};
+        playlist.name = row.name;
+        playlist.id = row.id;
+        retVal.push(playlist);
       })
-      var realRetVal = [];
-      for (var list in retVal) {
-        realRetVal.push(retVal[list]);
-      }
 
-
-      response.status(200).json(realRetVal);
+      response.status(200).json(retVal);
 
     })
+});
+
+app.get('/api/playlists/:playlistId/tracks', (request, response) => {
+  var playlistId = request.param('playlistId');
+  if (playlistId) {
+    db.all(
+      "SELECT lt.trackName, \
+              lt.trackFile \
+    FROM playlist_tracks pt \
+    JOIN library_tracks lt ON lt.rowid = pt.trackId \
+    WHERE pt.playlistId = ? \
+    order by lt.trackName", [playlistId], (err, rows) => {
+
+        if (err) {
+          response.status(500).message(err);
+          return;
+        }
+
+        var retVal = [];
+        rows.forEach((row) => {
+          var track = {};
+          track.name = row.trackName;
+          track.file = row.trackFile;
+          retVal.push(track);
+        })
+
+        response.status(200).json(retVal);
+
+      })
+  }
+
+
 });
 
 app.get('/api/library', (request, response) => {

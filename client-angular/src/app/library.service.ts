@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Playlist } from './playlist';
+import { Playlist, PlaylistTrack } from './playlist';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
@@ -20,11 +20,15 @@ export class LibraryService {
   ) { }
 
   getPlaylists(): Observable<Playlist[]> {
-    return this.http.get<Playlist[]>('http://localhost:3000/api/playlists');
+    return this.http.get<Playlist[]>('/api/playlists');
   }
 
   createPlaylist(playlist: Playlist): Observable<Playlist> {
     console.log(playlist);
-    return this.http.post<Playlist>('http://localhost:3000/api/playlists', playlist, httpOptions);
+    return this.http.post<Playlist>('/api/playlists', playlist, httpOptions);
   } 
+
+  getPlaylistTracks(playlistId: number): Observable<PlaylistTrack[]>{
+    return this.http.get<PlaylistTrack[]>('/api/playlists/'+playlistId+'/tracks')
+  }
 }

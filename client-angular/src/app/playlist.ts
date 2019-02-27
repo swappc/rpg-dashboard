@@ -1,7 +1,6 @@
 export class Playlist {
     name: string;
     id: number;
-    files: PlaylistTrack[];
 }
 
 export class PlaylistTrack {
@@ -10,7 +9,7 @@ export class PlaylistTrack {
 }
 
 export class DeckPlayer {
-    playlist: Playlist;
+    playlistTracks: PlaylistTrack[];
     currentSong = 0;
     currentTrack: PlaylistTrack;
     playerElement = new Audio();
@@ -31,36 +30,36 @@ export class DeckPlayer {
 
     loadTrack(trackNum: number) {
         this.currentSong = trackNum;
-        this.currentTrack = this.playlist.files[this.currentSong];
+        this.currentTrack = this.playlistTracks[this.currentSong];
         this.playerElement.src = this.currentTrack.file;
         this.onTrackLoaded();
     }
     playNext() {
-        if (this.playlist.files.length === 0) {
+        if (this.playlistTracks.length === 0) {
             return;
         }
         this.currentSong++;
-        if (this.currentSong === this.playlist.files.length) {
+        if (this.currentSong === this.playlistTracks.length) {
             this.currentSong = 0;
         }
         this.loadTrack(this.currentSong);
         this.playerElement.play();
     }
     playPrevious() {
-        if (this.playlist.files.length === 0) {
+        if (this.playlistTracks.length === 0) {
             return;
         }
         this.currentSong--;
         if (this.currentSong < 0) {
-            this.currentSong = this.playlist.files.length - 1;
+            this.currentSong = this.playlistTracks.length - 1;
         }
         this.loadTrack(this.currentSong);
         this.playerElement.play();
     }
-    setPlaylist(newPlaylist: Playlist) {
+    setPlaylist(newPlaylist: PlaylistTrack[]) {
         this.playerElement.pause();
-        this.playlist = newPlaylist;
-        var randomTrackNum = Math.floor((Math.random() * this.playlist.files.length))
+        this.playlistTracks = newPlaylist;
+        var randomTrackNum = Math.floor((Math.random() * this.playlistTracks.length))
         this.loadTrack(randomTrackNum);
         this.playerElement.play();
     }

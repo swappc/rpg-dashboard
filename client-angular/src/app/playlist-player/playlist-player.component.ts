@@ -94,8 +94,12 @@ export class PlaylistPlayerComponent implements OnInit {
       this.currentTrack = this.currentPlayer.currentTrack.name;
     }.bind(this);
     this.currentPlayer.timeUpdate = this.progressUpdate.bind(this);
-    this.currentPlayer.setPlaylist(playlist);
-    this.currentPlayer.fadeIn(this.volume);
+
+    this.libraryService.getPlaylistTracks(playlist.id).subscribe(playlistTracks => {
+      this.currentPlayer.setPlaylist(playlistTracks);
+      this.currentPlayer.fadeIn(this.volume);
+    });
+
 
     this.onPlay();
   }

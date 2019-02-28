@@ -1,6 +1,7 @@
 export class Playlist {
     name: string;
     id: number;
+    priority: number;
 }
 
 export class PlaylistTrack {

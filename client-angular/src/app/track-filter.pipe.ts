@@ -2,7 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { PlaylistTrack } from './playlist';
 
 @Pipe({
-  name: 'trackFilter'
+  name: 'trackFilter',
+  pure: false
 })
 export class TrackFilterPipe implements PipeTransform {
 

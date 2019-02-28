@@ -1,9 +1,9 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { Playlist } from '../playlist'
-import { MatOptionSelectionChange, MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
+import { Component, OnInit, Inject, ChangeDetectorRef } from '@angular/core';
+import { Playlist, PlaylistTrack } from '../playlist'
+import { MatOptionSelectionChange, MatDialogRef, MAT_DIALOG_DATA, MatDialog, MatSelectionListChange } from '@angular/material';
 import { LibraryService } from '../library.service';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
-import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
+import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 
 export interface DialogData {
   name: string;
@@ -17,13 +17,17 @@ export interface DialogData {
 export class PlaylistManagerComponent implements OnInit {
   selected = null;
   playlists: Playlist[];
+  libraryTracks: PlaylistTrack[];
+  playlistTracks: PlaylistTrack[];
   currentPlaylist = null;
+  selectedOptions: PlaylistTrack[];
 
   name: string;
 
   constructor(
     public dialog: MatDialog,
-    private libraryService: LibraryService) { }
+    private libraryService: LibraryService,
+    private changeDetector: ChangeDetectorRef) { }
 
   ngOnInit() {
     this.getPlaylists();
@@ -46,11 +50,67 @@ export class PlaylistManagerComponent implements OnInit {
   playlistChanged(event: MatOptionSelectionChange, playlist: any) {
     if (event.source.selected) {
       this.currentPlaylist = playlist;
+      this.populateTrackList();
+      this.populateLibrary();
     }
   }
 
+  libraryClicked(playlistTrack: PlaylistTrack) {
+    this.libraryTracks = this.libraryTracks.filter((value, index, array) => {
+        return value.name != playlistTrack.name;
+    });
+    this.playlistTracks.push(playlistTrack);
+    this.sortArrayByName(this.playlistTracks);
+  }
+
+  playlistClicked(playlistTrack: PlaylistTrack) {
+    this.playlistTracks = this.playlistTracks.filter((value, index, array) => {
+        return value.name != playlistTrack.name;
+    });
+    this.libraryTracks.push(playlistTrack);
+    this.sortArrayByName(this.libraryTracks);
+  }
+
+  playlistTracksSelectionChanged(event: MatSelectionListChange, playlistTracks: any) {
+    console.log();
+  }
+
+  onNgModelChange(event){
+    console.log(this.selectedOptions);
+    console.log('on ng model change' + event, event);
+  }
+
+  populateTrackList(): void {
+    this.libraryService.getPlaylistTracks(this.currentPlaylist.id).subscribe(playlistTracks => {
+      this.playlistTracks = playlistTracks;
+    });
+  }
+
+  populateLibrary(): void {
+    this.libraryService.getLibraryTracks().subscribe(libraryTracks => {
+
+      var dict = {};
+      for (var i = 0; i < this.playlistTracks.length; ++i) {
+        dict[this.playlistTracks[i].name] = true;
+      }
+
+      var tempTracks = [];
+      for (var i = 0; i < libraryTracks.length; ++i) {
+        if (!dict[libraryTracks[i].name]) {
+          tempTracks.push(libraryTracks[i]);
+        }
+      }
+
+      this.libraryTracks = tempTracks;
+    });
+  }
+
   sortPlaylists(): void {
-    this.playlists.sort((a, b) => {
+    this.sortArrayByName(this.playlists);
+  }
+
+  sortArrayByName(array: any[]) {
+    array.sort((a, b) => {
       if (a.name > b.name) {
         return 1;
       }
@@ -133,6 +193,37 @@ export class PlaylistManagerComponent implements OnInit {
       }
 
     });
+  }
+
+  getPreviousIndex(elementId: string, track: any): number {
+    console.log(elementId);
+    var oldArray = elementId == 'libraryTracks' ? this.libraryTracks : this.playlistTracks;
+    console.log(oldArray);
+    console.log(track);
+    for (var i = 0; i < oldArray.length; ++i) {
+      if (oldArray[i].name == track) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  drop(event: CdkDragDrop<string[]>) {
+    var previousIndex = this.getPreviousIndex(event.previousContainer.id, event.item.element.nativeElement.innerText);
+    console.log("Previous Index: " + previousIndex);
+    if (previousIndex < 0 ) {
+      return;
+    }
+
+    if (event.previousContainer === event.container) {
+      moveItemInArray(event.container.data, previousIndex, event.currentIndex);
+    } else {
+      transferArrayItem(event.previousContainer.data,
+                        event.container.data,
+                        previousIndex,
+                        event.currentIndex);
+    }
+    this.changeDetector.detectChanges();
   }
 
 }

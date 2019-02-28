@@ -1,6 +1,6 @@
 
 import { NgModule } from '@angular/core';
-import { DragDropModule } from '@angular/cdk/drag-drop';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import {
   MatButtonModule,
   MatCheckboxModule,
@@ -16,11 +16,14 @@ import {
   MatInputModule,
   MatSliderModule,
   MatButtonToggleModule,
-  MatDialogModule
+  MatDialogModule,
+  MatTooltipModule
 } from '@angular/material';
 
 @NgModule({
-  imports: [MatButtonModule,
+
+  imports: [
+    MatButtonModule,
     MatButtonToggleModule,
     MatDialogModule,
     MatFormFieldModule,
@@ -32,11 +35,13 @@ import {
     MatSelectModule,
     MatSidenavModule,
     MatTabsModule,
+    MatTooltipModule,
     MatGridListModule,
     MatSliderModule,
     MatMenuModule,
-    DragDropModule],
-  exports: [MatButtonModule,
+    ScrollingModule],
+  exports: [
+    MatButtonModule,
     MatButtonToggleModule,
     MatDialogModule,
     MatFormFieldModule,
@@ -44,6 +49,7 @@ import {
     MatListModule,
     MatCheckboxModule,
     MatToolbarModule,
+    MatTooltipModule,
     MatIconModule,
     MatSelectModule,
     MatSidenavModule,
@@ -51,6 +57,6 @@ import {
     MatGridListModule,
     MatSliderModule,
     MatMenuModule,
-    DragDropModule],
+    ScrollingModule],
 })
 export class CustomMaterialModule { }

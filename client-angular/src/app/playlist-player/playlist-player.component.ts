@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { Playlist, DeckPlayer } from '../playlist'
 import { MidiService } from '../midi.service';
 import { GroupKey, CallbackKey, KeyColor, PlayKey, SliderKey, NLM } from '../midi-controller';
@@ -27,7 +27,8 @@ export class PlaylistPlayerComponent implements OnInit {
 
   constructor(
     private libraryService: LibraryService,
-    midiService: MidiService
+    midiService: MidiService,
+    private changeDetector: ChangeDetectorRef
   ) {
     this.midiController = midiService.getController();
     this.midiController.setupBtn(0, 0, 8, new CallbackKey(() => this.previous(), KeyColor.hi_green, KeyColor.lo_amber));
@@ -40,6 +41,7 @@ export class PlaylistPlayerComponent implements OnInit {
       var tempKey = new SliderKey('volume', i);
       tempKey.onPushCallback = function (value) {
         this.setVolume(value);
+        this.changeDetector.detectChanges();
       }.bind(this);
       this.midiController.setupBtn(0, 3, 7 - i, tempKey);
       this.volumeKeys.push(tempKey);
@@ -59,12 +61,14 @@ export class PlaylistPlayerComponent implements OnInit {
           var tempKey = new GroupKey(this.playlistKeyGroup, element.name);
           tempKey.onSelectedPush = () => {
             this.currentPlaylistKey = tempKey;
-            this.togglePlay()
+            this.togglePlay();
+            this.changeDetector.detectChanges();
           };
           tempKey.onUnSelectedPush = () => {
 
             this.currentPlaylistKey = tempKey;
             this.setPlaylist(element);
+            this.changeDetector.detectChanges();
           };
           this.midiController.setupBtn(0, 0, index, tempKey);
         })

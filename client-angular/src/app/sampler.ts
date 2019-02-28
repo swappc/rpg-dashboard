@@ -5,7 +5,7 @@ export class SamplerPlayer {
     playerElement = new Audio();
   
     constructor() { 
-        this.playerElement.onended = this.onEnded;
+        this.playerElement.onended = ()=>this.onEnded();
     }
   
     setTrack(track: PlaylistTrack) {

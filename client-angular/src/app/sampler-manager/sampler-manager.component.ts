@@ -36,29 +36,36 @@ export class SamplerManagerComponent implements OnInit {
       for (var row = 0; row < 8; row++) {
         this.samplers[page][row] = new Array();
         for (var col = 0; col < 4; col++) {
-          var tempPlayer  = new SamplerPlayer();
+          var tempPlayer = new SamplerPlayer();
 
-          tempPlayer.onEnded = function () {
-            this.changeDetector.markForCheck();
-          }.bind(this);
 
-          const playDelegate = (player: SamplerPlayer)=>{
-            return ()=>{player.togglePlay();
-            this.changeDetector.markForCheck();}
+          const playDelegate = (player: SamplerPlayer) => {
+            return () => {
+              player.togglePlay();
+              this.changeDetector.detectChanges();
+            }
           }
 
           var tempKey = new PlayKey(playDelegate(tempPlayer));
-          this.controller.setupBtn(page, col+4, row,tempKey);
-
-          const onPauseDelegate = (key: PlayKey)=>{
+          this.controller.setupBtn(page, col + 4, row, tempKey);
+          const onEndedDelegate = (key: PlayKey, changeDetector: ChangeDetectorRef)=>{
             return ()=>{
+              changeDetector.markForCheck();
+              key.playing=false;
+              key.setled();
+            }
+          }
+          tempPlayer.onEnded = onEndedDelegate(tempKey, this.changeDetector);
+
+          const onPauseDelegate = (key: PlayKey) => {
+            return () => {
               key.playing = false;
               key.setled();
             }
           }
 
-          const onPlayDelegate = (key: PlayKey)=>{
-            return ()=>{
+          const onPlayDelegate = (key: PlayKey) => {
+            return () => {
               key.playing = true;
               key.setled();
             }
@@ -85,7 +92,7 @@ export class SamplerManagerComponent implements OnInit {
     }
   }
 
-  changePage(page:number){
+  changePage(page: number) {
     this.page = page;
   }
 

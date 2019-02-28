@@ -7,6 +7,7 @@ export class Playlist {
 export class PlaylistTrack {
     name: string;
     file: string;
+    id: number;
 }
 
 export class DeckPlayer {

@@ -1,9 +1,8 @@
-import { Component, OnInit, Inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { Playlist, PlaylistTrack } from '../playlist'
 import { MatOptionSelectionChange, MatDialogRef, MAT_DIALOG_DATA, MatDialog, MatSelectionListChange } from '@angular/material';
 import { LibraryService } from '../library.service';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
-import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 
 export interface DialogData {
   name: string;
@@ -26,8 +25,7 @@ export class PlaylistManagerComponent implements OnInit {
 
   constructor(
     public dialog: MatDialog,
-    private libraryService: LibraryService,
-    private changeDetector: ChangeDetectorRef) { }
+    private libraryService: LibraryService) { }
 
   ngOnInit() {
     this.getPlaylists();
@@ -159,6 +157,23 @@ export class PlaylistManagerComponent implements OnInit {
     });
   }
 
+  savePlaylistTracksClicked(): void {
+    if (!this.currentPlaylist) {
+      return;
+    }
+
+    this.libraryService.savePlaylistTracks(this.currentPlaylist, this.playlistTracks).subscribe(savedTracks => {
+      this.populateTrackList();
+      this.populateLibrary();
+    })
+
+  }
+
+  resetTracksClicked(): void {
+    this.populateTrackList();
+    this.populateLibrary();
+  }
+
   deletePlaylistClicked(): void {
     if (!this.currentPlaylist) {
       return;
@@ -171,7 +186,6 @@ export class PlaylistManagerComponent implements OnInit {
     });
 
     dialogConf.afterClosed().subscribe(result => {
-      console.log(result);
       if (result == true) {
         console.log("Deleting Playlist: " + this.currentPlaylist.name)
         this.libraryService.deletePlaylist(this.currentPlaylist).subscribe(noReponse => {

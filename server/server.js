@@ -192,7 +192,7 @@ app.patch('/api/playlists/:playlistId', (request, response) => {
 
   if (sql.length > 0 && values.length > 0) {
     values.push(playlistId);
-    db.run('UPDATE playlists SET ' + sql + 'WHERE id = ?', values, (result, err) => {
+    db.run('UPDATE playlists SET ' + sql + 'WHERE id = ?', values, (err, row) => {
       if (err) {
         response.status(500).json(err);
         return;
@@ -203,6 +203,27 @@ app.patch('/api/playlists/:playlistId', (request, response) => {
     });
   }
 });
+
+app.put('/api/playlists/:playlistId/tracks', (request, response) => {
+  var playlistId = request.param('playlistId');
+  var tracks = request.body;
+
+  db.run('DELETE FROM playlist_tracks WHERE playlistId = ?', [playlistId], (err, row) => {
+    if (err) {
+      console.log(err);
+      response.status(500).json(err);
+      return;
+    }
+
+    var insertValues = [];
+    tracks.forEach((track) => {
+      insertValues.push(playlistId);
+      insertValues.push(track.id);
+    })
+    var insertPlaceholders = tracks.map(() => '(?,?)').join(',');
+    db.run('INSERT INTO playlist_tracks(playlistId, trackId) VALUES ' + insertPlaceholders, insertValues);
+  });
+})
 
 app.get('/api/playlists', (request, response) => {
 
@@ -237,7 +258,8 @@ app.get('/api/playlists/:playlistId/tracks', (request, response) => {
   if (playlistId) {
     db.all(
       "SELECT lt.trackName, \
-              lt.trackFile \
+              lt.trackFile, \
+              lt.rowid \
     FROM playlist_tracks pt \
     JOIN library_tracks lt ON lt.rowid = pt.trackId \
     WHERE pt.playlistId = ? \
@@ -253,6 +275,7 @@ app.get('/api/playlists/:playlistId/tracks', (request, response) => {
           var track = {};
           track.name = row.trackName;
           track.file = row.trackFile;
+          track.id = row.rowid;
           retVal.push(track);
         })
 
@@ -266,7 +289,7 @@ app.get('/api/playlists/:playlistId/tracks', (request, response) => {
 
 app.get('/api/library', (request, response) => {
   db.all(
-    "SELECT lt.trackName as name, lt.trackFile as file \
+    "SELECT lt.trackName as name, lt.trackFile as file, lt.rowid as id \
   FROM library_tracks lt \
   order by lt.trackName", [], (err, rows) => {
       response.json(200, rows);

@@ -23,21 +23,23 @@ let db = new sqlite3.Database(serverRoot + '/db/playlists.db', (err) => {
 });
 
 if (args['dbinit']) {
-  function processDirectory(directory, urlPath) {
 
-    var listings = fs.readdirSync(directory);
-    listings.forEach((obj) => {
-      var fsStats = fs.statSync(directory + '/' + obj);
-      if (fsStats.isFile()) {
-        var fileName = path.parse(obj).base;
-        db.run('INSERT INTO library_tracks(trackName, trackFile) VALUES (?,?) ON CONFLICT(trackName) DO NOTHING', [fileName, urlPath + '/' + obj]);
-      } else if (fsStats.isDirectory()) {
-        processDirectory(directory + '/' + obj, urlPath + "/" + obj);
-      }
-    })
-  }
 
   db.serialize(() => {
+    function processDirectory(directory, urlPath) {
+
+      var listings = fs.readdirSync(directory);
+      listings.forEach((obj) => {
+        var fsStats = fs.statSync(directory + '/' + obj);
+        if (fsStats.isFile()) {
+          var fileName = path.parse(obj).base;
+          db.run('INSERT INTO library_tracks(trackName, trackFile) VALUES (?,?) ON CONFLICT(trackName) DO NOTHING', [fileName, urlPath + '/' + obj]);
+        } else if (fsStats.isDirectory()) {
+          processDirectory(directory + '/' + obj, urlPath + "/" + obj);
+        }
+      })
+    }
+
     db.run('CREATE TABLE IF NOT EXISTS playlists (id INTEGER PRIMARY KEY, name TEXT NOT NULL, priority INTEGER UNIQUE)')
       .run('CREATE TABLE IF NOT EXISTS playlist_tracks (trackId INTEGER NOT NULL, playlistId INTEGER NOT NULL, PRIMARY KEY (trackId, playlistId))')
       .run('CREATE TABLE IF NOT EXISTS library (folder TEXT UNIQUE NOT NULL)')

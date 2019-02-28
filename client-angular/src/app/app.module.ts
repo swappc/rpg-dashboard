@@ -17,6 +17,7 @@ import { CustomReuseStrategy } from './CustomRouteReuseStrategy';
 import { TrackFilterPipe } from './track-filter.pipe';
 import { NgDragDropModule } from 'ng-drag-drop';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.componen
     FormsModule,
     HttpClientModule,
     AppRoutingModule,
-    NgDragDropModule.forRoot()
+    NgDragDropModule.forRoot(),
+    ScrollingModule
   ],
   entryComponents: [PlaylistManagerNewPlaylistDialog, ConfirmDialogComponent],
   providers: [{ provide: RouteReuseStrategy, useClass: CustomReuseStrategy }],

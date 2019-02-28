@@ -13,3 +13,13 @@
     display: inline-block;
     vertical-align: top;
   }
+
+  .example-viewport {
+    width: 480px;
+    vertical-align: top;
+    border: 1px solid #ccc;
+  }
+  
+  .example-item {
+    height: 50px;
+  }

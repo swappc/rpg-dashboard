@@ -71,15 +71,6 @@ export class PlaylistManagerComponent implements OnInit {
     this.sortArrayByName(this.libraryTracks);
   }
 
-  playlistTracksSelectionChanged(event: MatSelectionListChange, playlistTracks: any) {
-    console.log();
-  }
-
-  onNgModelChange(event){
-    console.log(this.selectedOptions);
-    console.log('on ng model change' + event, event);
-  }
-
   populateTrackList(): void {
     this.libraryService.getPlaylistTracks(this.currentPlaylist.id).subscribe(playlistTracks => {
       this.playlistTracks = playlistTracks;
@@ -193,37 +184,6 @@ export class PlaylistManagerComponent implements OnInit {
       }
 
     });
-  }
-
-  getPreviousIndex(elementId: string, track: any): number {
-    console.log(elementId);
-    var oldArray = elementId == 'libraryTracks' ? this.libraryTracks : this.playlistTracks;
-    console.log(oldArray);
-    console.log(track);
-    for (var i = 0; i < oldArray.length; ++i) {
-      if (oldArray[i].name == track) {
-        return i;
-      }
-    }
-    return -1;
-  }
-
-  drop(event: CdkDragDrop<string[]>) {
-    var previousIndex = this.getPreviousIndex(event.previousContainer.id, event.item.element.nativeElement.innerText);
-    console.log("Previous Index: " + previousIndex);
-    if (previousIndex < 0 ) {
-      return;
-    }
-
-    if (event.previousContainer === event.container) {
-      moveItemInArray(event.container.data, previousIndex, event.currentIndex);
-    } else {
-      transferArrayItem(event.previousContainer.data,
-                        event.container.data,
-                        previousIndex,
-                        event.currentIndex);
-    }
-    this.changeDetector.detectChanges();
   }
 
 }

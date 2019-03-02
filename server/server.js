@@ -43,7 +43,8 @@ if (args['dbinit']) {
     db.run('CREATE TABLE IF NOT EXISTS playlists (id INTEGER PRIMARY KEY, name TEXT NOT NULL, priority INTEGER UNIQUE)')
       .run('CREATE TABLE IF NOT EXISTS playlist_tracks (trackId INTEGER NOT NULL, playlistId INTEGER NOT NULL, PRIMARY KEY (trackId, playlistId))')
       .run('CREATE TABLE IF NOT EXISTS library (folder TEXT UNIQUE NOT NULL)')
-      .run('CREATE TABLE IF NOT EXISTS library_tracks(trackName TEXT UNIQUE NOT NULL, trackFile TEXT NOT NULL)');
+      .run('CREATE TABLE IF NOT EXISTS library_tracks(id INTEGER PRIMARY KEY, trackName TEXT UNIQUE NOT NULL, trackFile TEXT NOT NULL)')
+      .run('CREATE TABLE IF NOT EXISTS sampler_tracks(page INTEGER NOT NULL, row INTEGER NOT NULL, col INTEGER NOT NULL,trackId INTEGER NOT NULL,PRIMARY KEY(page, row, col))');
 
     var libraryPath = args['library'] ? args['library'] : serverRoot + '/assets';
 
@@ -64,12 +65,12 @@ if (args['dbinit']) {
           var playlistFiles = playlist.files.map((track) => track.name);
           var placeholders = '(' + playlist.files.map(() => '?').join(',') + ')';
 
-          db.all('SELECT rowid FROM library_tracks WHERE trackName in ' + placeholders, playlistFiles, (err, rows) => {
+          db.all('SELECT id FROM library_tracks WHERE trackName in ' + placeholders, playlistFiles, (err, rows) => {
             if (rows && rows.length > 0) {
               var insertValues = [];
               rows.forEach((row) => {
                 insertValues.push(index);
-                insertValues.push(row.rowid);
+                insertValues.push(row.id);
               })
               var insertPlaceholders = rows.map(() => '(?,?)').join(',');
               db.run('INSERT INTO playlist_tracks(playlistId, trackId) VALUES ' + insertPlaceholders, insertValues);
@@ -296,6 +297,44 @@ app.get('/api/library', (request, response) => {
     })
 });
 
+app.get('/api/sampler',(request, response)=>{
+  db.all(
+    "SELECT st.page, st.row, st.col, lt.id, lt.trackName, lt.trackFile \
+    FROM sampler_tracks st \
+    JOIN library_tracks lt on st.trackId=lt.id",[],(err,rows)=>{
+      var retVal = [];
+      rows.forEach((data)=>{
+        retVal.push({
+          page:data.page,
+          row: data.row,
+          col: data.col,
+          track: {
+            id: data.id,
+            name: data.trackName,
+            file: data.trackFile
+          }
+        })
+      })
+      response.status(200).json(retVal);
+    }
+  )
+});
+
+app.put('/api/sampler', (request, response) => {
+  db.run('DELETE FROM sampler_tracks',[],(err, row)=>{
+    var insertValues = [];
+    var samplers = request.body;
+    var insertPlaceholders = samplers.map(()=>'(?,?,?,?)').join(',');
+    samplers.forEach((sampler)=>
+    {
+      insertValues.push(sampler.page);
+      insertValues.push(sampler.row);
+      insertValues.push(sampler.col);
+      insertValues.push(sampler.track.id);
+    })
+    db.run('INSERT INTO sampler_tracks (page, row, col, trackId) VALUES '+ insertPlaceholders, insertValues);
+  })
+})
 
 app.listen(port, (err) => {
   if (err) {

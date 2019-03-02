@@ -1,14 +1,14 @@
-import { PlaylistTrack } from './playlist';
+import { LibraryTrack } from './library.service';
 
 export class SamplerPlayer {
-    currentTrack: PlaylistTrack;
+    currentTrack: LibraryTrack;
     playerElement = new Audio();
   
     constructor() { 
         this.playerElement.onended = ()=>this.onEnded();
     }
   
-    setTrack(track: PlaylistTrack) {
+    setTrack(track: LibraryTrack) {
         this.currentTrack = track;
         this.playerElement.src = this.currentTrack.file;
         this.onTrackLoaded();

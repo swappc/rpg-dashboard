@@ -1,6 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { PlaylistTrack } from '../playlist';
-import { LibraryService } from '../library.service';
+import { LibraryService, LibraryTrack, SamplerTrack } from '../library.service';
 import { SamplerPlayer } from '../sampler';
 import { MidiService } from '../midi.service';
 import { NLM, CallbackKey, PlayKey } from '../midi-controller';
@@ -11,8 +10,8 @@ import { NLM, CallbackKey, PlayKey } from '../midi-controller';
   styleUrls: ['./sampler-manager.component.css']
 })
 export class SamplerManagerComponent implements OnInit {
-  allTracks: PlaylistTrack[];
-  filteredTracks: PlaylistTrack[];
+  allTracks: LibraryTrack[];
+  filteredTracks: LibraryTrack[];
   searchText: string;
   samplers: SamplerPlayer[][][];
   page = 0;
@@ -28,10 +27,12 @@ export class SamplerManagerComponent implements OnInit {
       this.filteredTracks = tracks.slice(0, 30);
     })
 
+
+
     this.controller = midiService.getController();
 
     this.samplers = new Array();
-    for (var page = 0; page < 1; page++) {
+    for (var page = 0; page < 8; page++) {
       this.samplers[page] = new Array();
       for (var row = 0; row < 8; row++) {
         this.samplers[page][row] = new Array();
@@ -48,10 +49,10 @@ export class SamplerManagerComponent implements OnInit {
 
           var tempKey = new PlayKey(playDelegate(tempPlayer));
           this.controller.setupBtn(page, col + 4, row, tempKey);
-          const onEndedDelegate = (key: PlayKey, changeDetector: ChangeDetectorRef)=>{
-            return ()=>{
+          const onEndedDelegate = (key: PlayKey, changeDetector: ChangeDetectorRef) => {
+            return () => {
               changeDetector.markForCheck();
-              key.playing=false;
+              key.playing = false;
               key.setled();
             }
           }
@@ -79,6 +80,11 @@ export class SamplerManagerComponent implements OnInit {
         }
       }
     }
+    this.libraryService.getSampler().subscribe(samplers => {
+      samplers.forEach((sampler) => {
+        this.samplers[sampler.page][sampler.row][sampler.col].setTrack(sampler.track);
+      })
+    });
 
   }
 
@@ -101,6 +107,21 @@ export class SamplerManagerComponent implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  save() {
+    var retVal = [];
+    for (var page = 0; page < 8; page++) {
+      for (var row = 0; row < 8; row++) {
+        for (var col = 0; col < 4; col++) {
+          if (this.samplers[page][row][col].currentTrack) {
+            retVal.push(new SamplerTrack(page, row, col, this.samplers[page][row][col].currentTrack));
+          }
+        }
+      }
+    }
+    this.libraryService.saveSampler(retVal).subscribe();
+
   }
 
 }

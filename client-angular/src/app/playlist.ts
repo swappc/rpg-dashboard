@@ -1,19 +1,12 @@
-export class Playlist {
-    name: string;
-    id: number;
-    priority: number;
-}
+import { LibraryTrack } from './library.service';
 
-export class PlaylistTrack {
-    name: string;
-    file: string;
-    id: number;
-}
+
+
 
 export class DeckPlayer {
-    playlistTracks: PlaylistTrack[];
+    playlistTracks: LibraryTrack[];
     currentSong = 0;
-    currentTrack: PlaylistTrack;
+    currentTrack: LibraryTrack;
     playerElement = new Audio();
     volume = 0;
     timer = null;
@@ -58,7 +51,7 @@ export class DeckPlayer {
         this.loadTrack(this.currentSong);
         this.playerElement.play();
     }
-    setPlaylist(newPlaylist: PlaylistTrack[]) {
+    setPlaylist(newPlaylist: LibraryTrack[]) {
         this.playerElement.pause();
         this.playlistTracks = newPlaylist;
         var randomTrackNum = Math.floor((Math.random() * this.playlistTracks.length))

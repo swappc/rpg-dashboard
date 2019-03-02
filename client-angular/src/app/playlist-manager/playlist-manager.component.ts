@@ -1,7 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { Playlist, PlaylistTrack } from '../playlist'
 import { MatOptionSelectionChange, MatDialogRef, MAT_DIALOG_DATA, MatDialog, MatSelectionListChange } from '@angular/material';
-import { LibraryService } from '../library.service';
+import { LibraryService, Playlist, LibraryTrack } from '../library.service';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 
 export interface DialogData {
@@ -16,10 +15,10 @@ export interface DialogData {
 export class PlaylistManagerComponent implements OnInit {
   selected = null;
   playlists: Playlist[];
-  libraryTracks: PlaylistTrack[];
-  playlistTracks: PlaylistTrack[];
+  libraryTracks: LibraryTrack[];
+  playlistTracks: LibraryTrack[];
   currentPlaylist = null;
-  selectedOptions: PlaylistTrack[];
+  selectedOptions: LibraryTrack[];
 
   name: string;
 
@@ -53,7 +52,7 @@ export class PlaylistManagerComponent implements OnInit {
     }
   }
 
-  libraryClicked(playlistTrack: PlaylistTrack) {
+  libraryClicked(playlistTrack: LibraryTrack) {
     this.libraryTracks = this.libraryTracks.filter((value, index, array) => {
         return value.name != playlistTrack.name;
     });
@@ -61,7 +60,7 @@ export class PlaylistManagerComponent implements OnInit {
     this.sortArrayByName(this.playlistTracks);
   }
 
-  playlistClicked(playlistTrack: PlaylistTrack) {
+  playlistClicked(playlistTrack: LibraryTrack) {
     this.playlistTracks = this.playlistTracks.filter((value, index, array) => {
         return value.name != playlistTrack.name;
     });

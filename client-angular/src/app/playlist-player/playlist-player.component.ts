@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
-import { Playlist, DeckPlayer } from '../playlist'
+import { DeckPlayer } from '../playlist'
 import { MidiService } from '../midi.service';
 import { GroupKey, CallbackKey, KeyColor, PlayKey, SliderKey, NLM } from '../midi-controller';
-import { LibraryService } from '../library.service';
+import { LibraryService, Playlist } from '../library.service';
 
 @Component({
   selector: 'app-playlist-player',

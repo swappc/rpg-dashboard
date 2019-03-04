@@ -6,6 +6,7 @@ import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/dr
 import { Track } from '../track';
 import { SamplerPlayer } from '../sampler-player';
 
+
 export interface DialogData {
   name: string;
 }
@@ -26,6 +27,7 @@ export class PlaylistManagerComponent implements OnInit {
   player: SamplerPlayer;
   noPriorityList: Playlist[];
   priorityList: Playlist[];
+
   name: string;
 
   constructor(

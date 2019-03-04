@@ -17,6 +17,7 @@ import { TrackFilterPipe } from './track-filter.pipe';
 import { NgDragDropModule } from 'ng-drag-drop';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { PlaylistFilterPipe } from './playlist-filter.pipe';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
     PlaylistManagerComponent,
     PlaylistManagerNewPlaylistDialog,
     TrackFilterPipe,
+    PlaylistFilterPipe,
     ConfirmDialogComponent
   ],
   imports: [

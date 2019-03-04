@@ -1,5 +1,6 @@
 
 import { NgModule } from '@angular/core';
+import {DragDropModule} from '@angular/cdk/drag-drop';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import {
   MatButtonModule,
@@ -23,6 +24,7 @@ import {
 @NgModule({
 
   imports: [
+    DragDropModule,
     MatButtonModule,
     MatButtonToggleModule,
     MatDialogModule,
@@ -41,6 +43,7 @@ import {
     MatMenuModule,
     ScrollingModule],
   exports: [
+    DragDropModule,
     MatButtonModule,
     MatButtonToggleModule,
     MatDialogModule,

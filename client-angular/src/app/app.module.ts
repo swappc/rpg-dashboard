@@ -18,6 +18,7 @@ import { NgDragDropModule } from 'ng-drag-drop';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CrateManagerComponent, CrateManagerNewCrateDialog } from './crate-manager/crate-manager.component';
+import { CrateFilterPipe } from './playlist-filter.pipe';
 
 @NgModule({
   declarations: [
@@ -27,9 +28,9 @@ import { CrateManagerComponent, CrateManagerNewCrateDialog } from './crate-manag
     PlaylistManagerComponent,
     PlaylistManagerNewPlaylistDialog,
     TrackFilterPipe,
-    ConfirmDialogComponent,
     CrateManagerComponent,
-    CrateManagerNewCrateDialog
+    CrateManagerNewCrateDialog,
+    CrateFilterPipe
   ],
   imports: [
     BrowserModule,

@@ -1,14 +1,24 @@
 <h1 mat-header style="padding: 10px; padding-left: 50px">Playlist Manager</h1>
-<div cdkDropListGroup class="manager-container-large">
+<div class="manager-container-large">
   <div class="manager-container">
-    <h2>Library Tracks <div style="display:inline-block" *ngIf="libraryTracks">({{libraryTracks.length}})</div></h2>
+    <h2>Library Tracks <div style="display:inline-block" *ngIf="libraryTracks">({{libraryTracks.length}})</div>
+    </h2>
     <mat-list-item>
       <input matInput placeholder="Track Filter" [(ngModel)]="searchText">
     </mat-list-item>
     <cdk-virtual-scroll-viewport class="manager-viewport" itemSize="60">
-      <mat-list>
+      <mat-list class="manager-list">
         <mat-list-item mat-list-item class=manager-box *ngFor="let item of libraryTracks | trackFilter: searchText">
+          <button *ngIf="isPlaying(item);else other_content" mat-icon-button (click)="togglePlay(item)">
+            <mat-icon>pause_circle_filled</mat-icon>
+          </button>
+          <ng-template #other_content>
+            <button mat-icon-button (click)="togglePlay(item)">
+              <mat-icon>play_circle_filled</mat-icon>
+            </button>
+          </ng-template>
           <div>{{item.name}}</div>
+
           <button mat-icon-button style="position:fixed; right:0px" (click)="libraryClicked(item)"
             matTooltip="Add track to playlist">
             <mat-icon>add_circle</mat-icon>
@@ -51,9 +61,17 @@
       <input matInput placeholder="Playlist Track Filter" [(ngModel)]="searchPlaylistText">
     </mat-list-item>
     <cdk-virtual-scroll-viewport class="manager-viewport" itemSize="60">
-      <mat-list>
+      <mat-list class="manager-list">
         <mat-list-item mat-list-item class=manager-box
           *ngFor="let item of playlistTracks | trackFilter: searchPlaylistText">
+          <button *ngIf="isPlaying(item);else other_content" mat-icon-button (click)="togglePlay(item)">
+            <mat-icon>pause_circle_filled</mat-icon>
+          </button>
+          <ng-template #other_content>
+            <button mat-icon-button (click)="togglePlay(item)">
+              <mat-icon>play_circle_filled</mat-icon>
+            </button>
+          </ng-template>
           <div>{{item.name}}</div>
           <button mat-icon-button style="position:fixed; right:0px" (click)="playlistClicked(item)"
             matTooltip="Remove track from playlist">
@@ -64,3 +82,31 @@
     </cdk-virtual-scroll-viewport>
   </div>
 </div>
+<!-- <div class="manager-container-large">
+  <div class="manager-container">
+    <h2>Playlist Priority</h2>
+    <div class="manager-container">
+        <mat-list-item>
+            <input matInput placeholder="No Priority Playlists" [(ngModel)]="searchNoP">
+          </mat-list-item>
+      <cdk-virtual-scroll-viewport class="manager-viewport" itemSize="60">
+        <div cdkDropList #noPList="cdkDropList" [cdkDropListData]="noPriorityList" [cdkDropListConnectedTo]="[PList]"
+          class="manager-list" (cdkDropListDropped)="drop($event)">
+          <div class="manager-drag-box" *ngFor="let item of noPriorityList | crateFilter: searchNoP" cdkDrag>{{item.name}}</div>
+        </div>
+      </cdk-virtual-scroll-viewport>
+    </div>
+
+    <div class="manager-container">
+        <mat-list-item>
+            <input matInput placeholder="Priority Playlists" [(ngModel)]="searchP">
+          </mat-list-item>
+      <cdk-virtual-scroll-viewport class="manager-viewport" itemSize="60">
+        <div cdkDropList #PList="cdkDropList" [cdkDropListData]="priorityList" [cdkDropListConnectedTo]="[noPList]"
+          class="manager-list" (cdkDropListDropped)="drop($event)">
+          <div class="manager-drag-box" *ngFor="let item of priorityList | crateFilter: searchP" cdkDrag>{{item.name}}</div>
+        </div>
+      </cdk-virtual-scroll-viewport>
+    </div>
+  </div>
+</div> -->

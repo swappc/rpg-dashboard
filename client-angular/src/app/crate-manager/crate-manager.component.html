@@ -28,7 +28,7 @@
   </div>
   <div class="manager-container">
     <mat-form-field class="crate_selector">
-      <mat-select placeholder="Crate" [(value)]="currentCrate.name">
+      <mat-select placeholder="Crate" [(value)]="currentCrateName">
         <mat-option *ngFor="let crate of crates" [value]="crate.name" (onSelectionChange)="crateChanged($event, crate)">
           {{ crate.name }}
         </mat-option>

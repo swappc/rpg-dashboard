@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatOptionSelectionChange, MatDialogRef, MAT_DIALOG_DATA, MatDialog, MatSelectionListChange } from '@angular/material';
-import { LibraryService, Crate, CrateType} from '../library.service';
+import { LibraryService, Crate, CrateType } from '../library.service';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { Track } from '../track';
 import { EnumHelpers } from '../enum-helper';
@@ -20,18 +20,19 @@ export class CrateManagerComponent implements OnInit {
   crates: Crate[];
   libraryTracks: Track[];
   crateTracks: Track[];
-  currentCrate = null;
+  currentCrate: Crate;
+  currentCrateName: string;
   selectedOptions: Track[];
-  name: string;
   currentTrack: Track;
   player: SamplerPlayer;
 
+
   constructor(
     public dialog: MatDialog,
-    private libraryService: LibraryService) { 
+    private libraryService: LibraryService) {
     this.player = new SamplerPlayer();
 
-    }
+  }
 
   ngOnInit() {
     this.getCrates();
@@ -46,14 +47,14 @@ export class CrateManagerComponent implements OnInit {
       .subscribe(crates => {
         this.crates = crates;
         if (crates.length > 0) {
-          this.currentCrate = this.crates[0];
+          this.setCurrentCrate(crates[0]);
         }
       });
   }
 
   crateChanged(event: MatOptionSelectionChange, crate: any) {
     if (event.source.selected) {
-      this.currentCrate = crate;
+      this.setCurrentCrate(crate);
       this.populateTrackList();
       this.populateLibrary();
     }
@@ -61,7 +62,7 @@ export class CrateManagerComponent implements OnInit {
 
   libraryClicked(crateTrack: Track) {
     this.libraryTracks = this.libraryTracks.filter((value, index, array) => {
-        return value.name != crateTrack.name;
+      return value.name != crateTrack.name;
     });
     this.crateTracks.push(crateTrack);
     this.sortArrayByName(this.crateTracks);
@@ -69,7 +70,7 @@ export class CrateManagerComponent implements OnInit {
 
   crateClicked(crateTrack: Track) {
     this.crateTracks = this.crateTracks.filter((value, index, array) => {
-        return value.name != crateTrack.name;
+      return value.name != crateTrack.name;
     });
     this.libraryTracks.push(crateTrack);
     this.sortArrayByName(this.libraryTracks);
@@ -119,8 +120,10 @@ export class CrateManagerComponent implements OnInit {
   newCrateClicked(): void {
     const dialogRef = this.dialog.open(CrateManagerNewCrateDialog, {
       width: '250px',
-      data: { name: this.name,
-              method: "Create" }
+      data: {
+        name: this.currentCrateName,
+        method: "Create"
+      }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -131,8 +134,8 @@ export class CrateManagerComponent implements OnInit {
         this.libraryService.createCrate(crate)
           .subscribe(crate => {
             this.crates.push(crate);
+            this.setCurrentCrate(crate);
             this.sortCrates();
-            this.currentCrate = crate;
           });
       }
     });
@@ -142,12 +145,14 @@ export class CrateManagerComponent implements OnInit {
     if (!this.currentCrate) {
       return;
     }
-    
+
     const dialogRef = this.dialog.open(CrateManagerNewCrateDialog, {
       width: '250px',
-      data: { name: this.currentCrate.name,
-              type: this.currentCrate.type,
-              method: "Update" }
+      data: {
+        name: this.currentCrate.name,
+        type: this.currentCrate.type,
+        method: "Update"
+      }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -160,6 +165,8 @@ export class CrateManagerComponent implements OnInit {
           .subscribe(crate => {
             console.log(crate.name);
             this.currentCrate.name = crate.name;
+            this.currentCrate.type = crate.type;
+            this.currentCrateName = crate.name;
             this.sortCrates();
           });
       }
@@ -190,8 +197,10 @@ export class CrateManagerComponent implements OnInit {
 
     const dialogConf = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
-      data: { confirm: false, 
-              message: "Are you certain you want to delete this crate?"}
+      data: {
+        confirm: false,
+        message: "Are you certain you want to delete this crate?"
+      }
     });
 
     dialogConf.afterClosed().subscribe(result => {
@@ -201,11 +210,22 @@ export class CrateManagerComponent implements OnInit {
           this.crates = this.crates.filter((value, index, arr) => {
             return value.name != this.currentCrate.name;
           });
-          this.currentCrate = this.crates.length > 0 ? this.crates[0].name:null;
+          this.setCurrentCrate(this.crates.length > 0 ? this.crates[0] : null);
+
         });
       }
 
     });
+  }
+
+  setCurrentCrate(crate: Crate) {
+    this.currentCrate = crate;
+    if (crate) {
+      this.currentCrateName = crate.name;
+    } else {
+      this.currentCrateName = '';
+    }
+
   }
 
   togglePlay(track: Track) {

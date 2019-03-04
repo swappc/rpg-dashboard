@@ -12,7 +12,6 @@ import { PlaylistPlayerComponent } from './playlist-player/playlist-player.compo
 import { AppRoutingModule } from './app-routing.module';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { PlaylistManagerComponent, PlaylistManagerNewPlaylistDialog} from './playlist-manager/playlist-manager.component';
-import { SamplerManagerComponent } from './sampler-manager/sampler-manager.component';
 import { CustomReuseStrategy } from './CustomRouteReuseStrategy';
 import { TrackFilterPipe } from './track-filter.pipe';
 import { NgDragDropModule } from 'ng-drag-drop';
@@ -26,7 +25,6 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
     PageNotFoundComponent,
     PlaylistManagerComponent,
     PlaylistManagerNewPlaylistDialog,
-    SamplerManagerComponent,
     TrackFilterPipe,
     ConfirmDialogComponent
   ],

@@ -4,6 +4,7 @@ import { LibraryService, Crate, CrateType} from '../library.service';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { Track } from '../track';
 import { EnumHelpers } from '../enum-helper';
+import { SamplerPlayer } from '../sampler-player';
 
 export interface DialogData {
   name: string;
@@ -22,10 +23,15 @@ export class CrateManagerComponent implements OnInit {
   currentCrate = null;
   selectedOptions: Track[];
   name: string;
+  currentTrack: Track;
+  player: SamplerPlayer;
 
   constructor(
     public dialog: MatDialog,
-    private libraryService: LibraryService) { }
+    private libraryService: LibraryService) { 
+    this.player = new SamplerPlayer();
+
+    }
 
   ngOnInit() {
     this.getCrates();
@@ -200,6 +206,21 @@ export class CrateManagerComponent implements OnInit {
       }
 
     });
+  }
+
+  togglePlay(track: Track) {
+    if (this.currentTrack === track) {
+      this.player.pause();
+      this.currentTrack = null;
+    } else {
+      this.currentTrack = track;
+      this.player.setTrack(this.currentTrack);
+      this.player.play();
+    }
+  }
+
+  isPlaying(track: Track): boolean {
+    return this.player.currentTrack == track && this.player.isPlaying();
   }
 }
 

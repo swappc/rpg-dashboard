@@ -25,8 +25,8 @@ export class PlaylistManagerComponent implements OnInit {
   selectedOptions: Track[];
   currentTrack: Track;
   player: SamplerPlayer;
-  noPriorityList: Playlist[];
-  priorityList: Playlist[];
+  noPriorityList: Crate[];
+  priorityList: Crate[];
 
   name: string;
 
@@ -53,7 +53,7 @@ export class PlaylistManagerComponent implements OnInit {
         if (playlists.length > 0) {
           this.selected = this.playlists[0].name;
           playlists.forEach((list, index, array) => {
-            if (list.priority) {
+            if (list.metadata.priority) {
               this.priorityList.push(list);
             } else {
               this.noPriorityList.push(list);
@@ -61,10 +61,10 @@ export class PlaylistManagerComponent implements OnInit {
           });
           this.sortArrayByName(this.noPriorityList);
           this.priorityList.sort((a, b) => {
-            if (a.priority > b.priority) {
+            if (a.metadata.priority > b.metadata.priority) {
               return 1;
             }
-            if (a.priority < b.priority) {
+            if (a.metadata.priority < b.metadata.priority) {
               return -1;
             }
             return 0;

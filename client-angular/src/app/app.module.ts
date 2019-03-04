@@ -30,7 +30,8 @@ import { CrateFilterPipe } from './playlist-filter.pipe';
     TrackFilterPipe,
     CrateManagerComponent,
     CrateManagerNewCrateDialog,
-    CrateFilterPipe
+    CrateFilterPipe,
+    ConfirmDialogComponent
   ],
   imports: [
     BrowserModule,

@@ -1,8 +1,10 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { MatOptionSelectionChange, MatDialogRef, MAT_DIALOG_DATA, MatDialog, MatSelectionListChange } from '@angular/material';
-import { LibraryService, Playlist} from '../library.service';
+import { MatOptionSelectionChange, MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
+import { LibraryService, Playlist } from '../library.service';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { Track } from '../track';
+import { SamplerPlayer } from '../sampler-player';
 
 export interface DialogData {
   name: string;
@@ -20,32 +22,56 @@ export class PlaylistManagerComponent implements OnInit {
   playlistTracks: Track[];
   currentPlaylist = null;
   selectedOptions: Track[];
-
+  currentTrack: Track;
+  player: SamplerPlayer;
+  noPriorityList: Playlist[];
+  priorityList: Playlist[];
   name: string;
 
   constructor(
     public dialog: MatDialog,
-    private libraryService: LibraryService) { }
+    private libraryService: LibraryService) {
+    this.player = new SamplerPlayer();
+    this.noPriorityList = new Array();
+    this.priorityList = new Array();
+  }
 
   ngOnInit() {
     this.getPlaylists();
   }
 
-  playlistNotSelected() {
+  playlistNotSelected(): boolean {
     return this.currentPlaylist == null;
   }
 
-  getPlaylists() {
+  getPlaylists(): void {
     this.libraryService.getPlaylists()
       .subscribe(playlists => {
         this.playlists = playlists;
         if (playlists.length > 0) {
           this.selected = this.playlists[0].name;
+          playlists.forEach((list, index, array) => {
+            if (list.priority) {
+              this.priorityList.push(list);
+            } else {
+              this.noPriorityList.push(list);
+            }
+          });
+          this.sortArrayByName(this.noPriorityList);
+          this.priorityList.sort((a, b) => {
+            if (a.priority > b.priority) {
+              return 1;
+            }
+            if (a.priority < b.priority) {
+              return -1;
+            }
+            return 0;
+          });
         }
       });
   }
 
-  playlistChanged(event: MatOptionSelectionChange, playlist: any) {
+  playlistChanged(event: MatOptionSelectionChange, playlist: any): void {
     if (event.source.selected) {
       this.currentPlaylist = playlist;
       this.populateTrackList();
@@ -53,17 +79,21 @@ export class PlaylistManagerComponent implements OnInit {
     }
   }
 
-  libraryClicked(playlistTrack: Track) {
+  isPlaying(track: Track): boolean {
+    return this.currentTrack == track;
+  }
+
+  libraryClicked(playlistTrack: Track): void {
     this.libraryTracks = this.libraryTracks.filter((value, index, array) => {
-        return value.name != playlistTrack.name;
+      return value.name != playlistTrack.name;
     });
     this.playlistTracks.push(playlistTrack);
     this.sortArrayByName(this.playlistTracks);
   }
 
-  playlistClicked(playlistTrack: Track) {
+  playlistClicked(playlistTrack: Track): void {
     this.playlistTracks = this.playlistTracks.filter((value, index, array) => {
-        return value.name != playlistTrack.name;
+      return value.name != playlistTrack.name;
     });
     this.libraryTracks.push(playlistTrack);
     this.sortArrayByName(this.libraryTracks);
@@ -110,11 +140,24 @@ export class PlaylistManagerComponent implements OnInit {
     });
   }
 
+  togglePlay(track: Track) {
+    if (this.currentTrack === track) {
+      this.player.pause();
+      this.currentTrack = null;
+    } else {
+      this.currentTrack = track;
+      this.player.setTrack(this.currentTrack);
+      this.player.play();
+    }
+  }
+
   newPlaylistClicked(): void {
     const dialogRef = this.dialog.open(PlaylistManagerNewPlaylistDialog, {
       width: '250px',
-      data: { name: this.name,
-              method: "Create" }
+      data: {
+        name: this.name,
+        method: "Create"
+      }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -135,11 +178,13 @@ export class PlaylistManagerComponent implements OnInit {
     if (!this.currentPlaylist) {
       return;
     }
-    
+
     const dialogRef = this.dialog.open(PlaylistManagerNewPlaylistDialog, {
       width: '250px',
-      data: { name: this.selected,
-              method: "Update" }
+      data: {
+        name: this.selected,
+        method: "Update"
+      }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -149,7 +194,6 @@ export class PlaylistManagerComponent implements OnInit {
         playlist.id = this.currentPlaylist.id;
         this.libraryService.updatePlaylist(playlist)
           .subscribe(playlist => {
-            console.log(playlist.name);
             this.currentPlaylist.name = playlist.name;
             this.sortPlaylists();
           });
@@ -181,8 +225,10 @@ export class PlaylistManagerComponent implements OnInit {
 
     const dialogConf = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
-      data: { confirm: false, 
-              message: "Are you certain you want to delete this playlist?"}
+      data: {
+        confirm: false,
+        message: "Are you certain you want to delete this playlist?"
+      }
     });
 
     dialogConf.afterClosed().subscribe(result => {
@@ -193,11 +239,23 @@ export class PlaylistManagerComponent implements OnInit {
             return value.name != this.currentPlaylist.name;
           });
           this.currentPlaylist = null;
-          this.selected = this.playlists.length > 0 ? this.playlists[0].name : undefined; 
+          this.selected = this.playlists.length > 0 ? this.playlists[0].name : undefined;
         });
       }
 
     });
+  }
+
+  drop(event: CdkDragDrop<string[]>) {
+    if (event.previousContainer === event.container) {
+      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+    } else {
+      transferArrayItem(event.previousContainer.data,
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex);
+    }
+    this.sortArrayByName(this.noPriorityList);
   }
 
 }

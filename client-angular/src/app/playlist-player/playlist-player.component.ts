@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
-import { DeckPlayer } from '../playlist'
 import { MidiService } from '../midi.service';
 import { GroupKey, CallbackKey, KeyColor, PlayKey, SliderKey, NLM } from '../midi-controller';
 import { LibraryService, Playlist } from '../library.service';
+import { DeckPlayer } from '../deck-player';
 
 @Component({
   selector: 'app-playlist-player',
@@ -193,17 +193,16 @@ export class PlaylistPlayerComponent implements OnInit {
     return Math.floor(value * 100) + '%';
   }
 
-  formatSecondString(value: number){
-    var seconds = value%60;
-    var minutes = Math.floor(value/60%60);
-    var hours = Math.floor(value/3600%60);
+  formatSecondString(value: number) {
+    var seconds = value % 60;
+    var minutes = Math.floor(value / 60 % 60);
+    var hours = Math.floor(value / 3600 % 60);
     var timeParts = [];
-    if(hours>0)
-    {
-      timeParts.push(hours.toString().padStart(2,'0'));
+    if (hours > 0) {
+      timeParts.push(hours.toString().padStart(2, '0'));
     }
-    timeParts.push(minutes.toString().padStart(2,'0'));
-    timeParts.push(seconds.toString().padStart(2,'0'));
+    timeParts.push(minutes.toString().padStart(2, '0'));
+    timeParts.push(seconds.toString().padStart(2, '0'));
     return timeParts.join(':');
 
   }

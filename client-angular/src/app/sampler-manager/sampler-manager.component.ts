@@ -1,8 +1,9 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { LibraryService, LibraryTrack, SamplerTrack } from '../library.service';
-import { SamplerPlayer } from '../sampler';
+import { LibraryService, SamplerTrack } from '../library.service';
 import { MidiService } from '../midi.service';
 import { NLM, CallbackKey, PlayKey } from '../midi-controller';
+import { Track } from '../track';
+import { SamplerPlayer } from '../sampler-player';
 
 @Component({
   selector: 'app-sampler-manager',
@@ -10,8 +11,8 @@ import { NLM, CallbackKey, PlayKey } from '../midi-controller';
   styleUrls: ['./sampler-manager.component.css']
 })
 export class SamplerManagerComponent implements OnInit {
-  allTracks: LibraryTrack[];
-  filteredTracks: LibraryTrack[];
+  allTracks: Track[];
+  filteredTracks: Track[];
   searchText: string;
   samplers: SamplerPlayer[][][];
   page = 0;

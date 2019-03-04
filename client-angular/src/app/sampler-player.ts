@@ -1,14 +1,14 @@
-import { LibraryTrack } from './library.service';
+import { Track } from './track';
 
 export class SamplerPlayer {
-    currentTrack: LibraryTrack;
+    currentTrack: Track;
     playerElement = new Audio();
   
     constructor() { 
         this.playerElement.onended = ()=>this.onEnded();
     }
   
-    setTrack(track: LibraryTrack) {
+    setTrack(track: Track) {
         this.currentTrack = track;
         this.playerElement.src = this.currentTrack.file;
         this.onTrackLoaded();
@@ -61,5 +61,4 @@ export class SamplerPlayer {
 
     }
   
-  }
-  
+}

@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { LibraryTrack } from './library.service';
+import { Track } from './track';
 
 @Pipe({
   name: 'trackFilter',
@@ -7,7 +7,7 @@ import { LibraryTrack } from './library.service';
 })
 export class TrackFilterPipe implements PipeTransform {
 
-  transform(items: LibraryTrack[], searchText: string): any[] {
+  transform(items: Track[], searchText: string): any[] {
     if (!items) return [];
     if (!searchText) return items;
     searchText = searchText.toLowerCase();

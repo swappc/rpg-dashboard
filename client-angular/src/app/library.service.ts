@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Track } from './track';
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -30,20 +31,20 @@ export class LibraryService {
     return this.http.delete<Playlist>('/api/playlists/' + playlist.id);
   }
 
-  savePlaylistTracks(playlist: Playlist, tracks: LibraryTrack[]): Observable<LibraryTrack[]> {
-    return this.http.put<LibraryTrack[]>('/api/playlists/' + playlist.id + '/tracks', tracks, httpOptions);
+  savePlaylistTracks(playlist: Playlist, tracks: Track[]): Observable<Track[]> {
+    return this.http.put<Track[]>('/api/playlists/' + playlist.id + '/tracks', tracks, httpOptions);
   }
 
   updatePlaylist(playlist: Playlist): Observable<Playlist> {
     return this.http.patch<Playlist>('/api/playlists/' + playlist.id, playlist, httpOptions);
   }
 
-  getPlaylistTracks(playlistId: number): Observable<LibraryTrack[]> {
-    return this.http.get<LibraryTrack[]>('/api/playlists/' + playlistId + '/tracks')
+  getPlaylistTracks(playlistId: number): Observable<Track[]> {
+    return this.http.get<Track[]>('/api/playlists/' + playlistId + '/tracks')
   }
 
-  getLibraryTracks(): Observable<LibraryTrack[]> {
-    return this.http.get<LibraryTrack[]>('/api/library');
+  getLibraryTracks(): Observable<Track[]> {
+    return this.http.get<Track[]>('/api/library');
   }
 
   getSampler(): Observable<SamplerTrack[]> {
@@ -59,17 +60,10 @@ export class SamplerTrack {
   constructor(public page: number,
     public row: number,
     public col: number,
-    public track: LibraryTrack) {
+    public track: Track) {
 
   }
 
-}
-
-
-export class LibraryTrack {
-  name: string;
-  file: string;
-  id: number;
 }
 
 export class Playlist {

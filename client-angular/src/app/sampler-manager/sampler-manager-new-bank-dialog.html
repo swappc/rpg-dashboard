@@ -1,0 +1,19 @@
+<h1 mat-dialog-title>{{ data.method }} Sampler Bank</h1>
+<div mat-dialog-content>
+    <p>Sampler Bank Name:</p>
+    <mat-form-field>
+        <input matInput [(ngModel)]="data.name">
+    </mat-form-field>
+    <p>Row count:</p>
+    <mat-form-field>
+        <input matInput [(ngModel)]="data.name">
+    </mat-form-field>
+    <p>Sampler Bank Name:</p>
+    <mat-form-field>
+        <input matInput [(ngModel)]="data.name">
+    </mat-form-field>
+</div>
+<div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()">Cancel</button>
+    <button mat-button [mat-dialog-close]="data.name" cdkFocusInitial>{{ data.method }}</button>
+</div>

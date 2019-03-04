@@ -17,6 +17,7 @@ import { TrackFilterPipe } from './track-filter.pipe';
 import { NgDragDropModule } from 'ng-drag-drop';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { CrateManagerComponent, CrateManagerNewCrateDialog } from './crate-manager/crate-manager.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,9 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
     PlaylistManagerComponent,
     PlaylistManagerNewPlaylistDialog,
     TrackFilterPipe,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    CrateManagerComponent,
+    CrateManagerNewCrateDialog
   ],
   imports: [
     BrowserModule,
@@ -38,7 +41,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
     NgDragDropModule.forRoot(),
     ScrollingModule
   ],
-  entryComponents: [PlaylistManagerNewPlaylistDialog, ConfirmDialogComponent],
+  entryComponents: [PlaylistManagerNewPlaylistDialog, ConfirmDialogComponent, CrateManagerNewCrateDialog],
   providers: [{ provide: RouteReuseStrategy, useClass: CustomReuseStrategy }],
   bootstrap: [AppComponent]
 })

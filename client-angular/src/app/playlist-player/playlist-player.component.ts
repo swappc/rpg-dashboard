@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { MidiService } from '../midi.service';
 import { GroupKey, CallbackKey, KeyColor, PlayKey, SliderKey, NLM } from '../midi-controller';
-import { LibraryService, Playlist } from '../library.service';
+import { LibraryService, Crate } from '../library.service';
 import { DeckPlayer } from '../deck-player';
 
 @Component({
@@ -11,7 +11,7 @@ import { DeckPlayer } from '../deck-player';
 })
 export class PlaylistPlayerComponent implements OnInit {
   currentPlaylist: string;
-  playlists: Playlist[];
+  playlists: Crate[];
   currentTrack: string;
   currentPlayer: DeckPlayer;
   otherPlayer: DeckPlayer;
@@ -54,7 +54,7 @@ export class PlaylistPlayerComponent implements OnInit {
   }
 
   getPlaylists(): void {
-    this.libraryService.getPlaylists()
+    this.libraryService.getCrates()
       .subscribe(playlists => {
         this.playlists = playlists;
         this.playlists.forEach((element, index) => {
@@ -76,7 +76,7 @@ export class PlaylistPlayerComponent implements OnInit {
       });
   }
 
-  setPlaylist(playlist: Playlist): void {
+  setPlaylist(playlist: Crate): void {
     this.currentPlaylist = playlist.name;
     GroupKey.setGroupSelected(this.playlistKeyGroup, playlist.name);
 
@@ -99,7 +99,7 @@ export class PlaylistPlayerComponent implements OnInit {
     }.bind(this);
     this.currentPlayer.timeUpdate = this.progressUpdate.bind(this);
 
-    this.libraryService.getPlaylistTracks(playlist.id).subscribe(playlistTracks => {
+    this.libraryService.getCrateTracks(playlist.id).subscribe(playlistTracks => {
       this.currentPlayer.setPlaylist(playlistTracks);
       this.currentPlayer.fadeIn(this.volume);
     });

@@ -1,0 +1,66 @@
+<h1 mat-header style="padding: 10px; padding-left: 50px">Crate Manager</h1>
+<div cdkDropListGroup class="manager-container-large">
+  <div class="manager-container">
+    <h2>Library Tracks <div style="display:inline-block" *ngIf="libraryTracks">({{libraryTracks.length}})</div></h2>
+    <mat-list-item>
+      <input matInput placeholder="Track Filter" [(ngModel)]="searchText">
+    </mat-list-item>
+    <cdk-virtual-scroll-viewport class="manager-viewport" itemSize="60">
+      <mat-list>
+        <mat-list-item mat-list-item class=manager-box *ngFor="let item of libraryTracks | trackFilter: searchText">
+          <div>{{item.name}}</div>
+          <button mat-icon-button style="position:fixed; right:0px" (click)="libraryClicked(item)"
+            matTooltip="Add track to crate">
+            <mat-icon>add_circle</mat-icon>
+          </button>
+        </mat-list-item>
+      </mat-list>
+    </cdk-virtual-scroll-viewport>
+  </div>
+  <div class="manager-container">
+    <mat-form-field class="crate_selector">
+      <mat-select placeholder="Crate" [(value)]="currentCrate.name">
+        <mat-option *ngFor="let crate of crates" [value]="crate.name"
+          (onSelectionChange)="crateChanged($event, crate)">
+          {{ crate.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <button mat-icon-button (click)="newCrateClicked()" matTooltip="Add new crate">
+      <mat-icon>playlist_add</mat-icon>
+    </button>
+    <button mat-icon-button (click)="editCrateClicked()" matTooltip="Edit crate details"
+      [disabled]="crateNotSelected()">
+      <mat-icon>edit</mat-icon>
+    </button>
+    <button mat-icon-button (click)="deleteCrateClicked()" matTooltip="Delete crate"
+      [disabled]="crateNotSelected()">
+      <mat-icon>delete</mat-icon>
+    </button>
+    <button mat-icon-button (click)="resetTracksClicked()" matTooltip="Restore crate tracks"
+      [disabled]="crateNotSelected()">
+      <mat-icon>undo</mat-icon>
+    </button>
+    <button mat-icon-button (click)="saveCrateTracksClicked()" matTooltip="Save crate tracks"
+      [disabled]="crateNotSelected()">
+      <mat-icon>save</mat-icon>
+    </button>
+
+
+    <mat-list-item>
+      <input matInput placeholder="Crate Track Filter" [(ngModel)]="searchCrateText">
+    </mat-list-item>
+    <cdk-virtual-scroll-viewport class="manager-viewport" itemSize="60">
+      <mat-list>
+        <mat-list-item mat-list-item class=manager-box
+          *ngFor="let item of crateTracks | trackFilter: searchCrateText">
+          <div>{{item.name}}</div>
+          <button mat-icon-button style="position:fixed; right:0px" (click)="crateClicked(item)"
+            matTooltip="Remove track from crate">
+            <mat-icon>remove_circle</mat-icon>
+          </button>
+        </mat-list-item>
+      </mat-list>
+    </cdk-virtual-scroll-viewport>
+  </div>
+</div>

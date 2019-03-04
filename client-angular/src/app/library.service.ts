@@ -19,55 +19,45 @@ export class LibraryService {
     private http: HttpClient
   ) { }
 
-  getPlaylists(): Observable<Playlist[]> {
-    return this.http.get<Playlist[]>('/api/playlists');
+  getCrates(): Observable<Crate[]> {
+    return this.http.get<Crate[]>('/api/crates');
   }
 
-  createPlaylist(playlist: Playlist): Observable<Playlist> {
-    return this.http.post<Playlist>('/api/playlists', playlist, httpOptions);
+  createCrate(create: Crate): Observable<Crate> {
+    return this.http.post<Crate>('/api/crates', create, httpOptions);
   }
 
-  deletePlaylist(playlist: Playlist): Observable<Playlist> {
-    return this.http.delete<Playlist>('/api/playlists/' + playlist.id);
+  deleteCrate(crate: Crate): Observable<Crate> {
+    return this.http.delete<Crate>('/api/crates/' + crate.id);
   }
 
-  savePlaylistTracks(playlist: Playlist, tracks: Track[]): Observable<Track[]> {
-    return this.http.put<Track[]>('/api/playlists/' + playlist.id + '/tracks', tracks, httpOptions);
+  saveCrateTracks(crate: Crate, tracks: Track[]): Observable<Track[]> {
+    return this.http.put<Track[]>('/api/crates/' + crate.id + '/tracks', tracks, httpOptions);
   }
 
-  updatePlaylist(playlist: Playlist): Observable<Playlist> {
-    return this.http.patch<Playlist>('/api/playlists/' + playlist.id, playlist, httpOptions);
+  updateCrate(crate: Crate): Observable<Crate> {
+    return this.http.patch<Crate>('/api/crates/' + crate.id, crate, httpOptions);
   }
 
-  getPlaylistTracks(playlistId: number): Observable<Track[]> {
-    return this.http.get<Track[]>('/api/playlists/' + playlistId + '/tracks')
+  getCrateTracks(crate: number): Observable<Track[]> {
+    return this.http.get<Track[]>('/api/crates/' + crate + '/tracks')
   }
 
   getLibraryTracks(): Observable<Track[]> {
     return this.http.get<Track[]>('/api/library');
   }
-
-  getSampler(): Observable<SamplerTrack[]> {
-    return this.http.get<SamplerTrack[]>('/api/sampler');
-  }
-
-  saveSampler(sampler: SamplerTrack[]): Observable<any[]> {
-    return this.http.put<SamplerTrack[]>('/api/sampler', sampler, httpOptions);
-  }
 }
 
-export class SamplerTrack {
-  constructor(public page: number,
-    public row: number,
-    public col: number,
-    public track: Track) {
-
-  }
-
-}
-
-export class Playlist {
+export class Crate {
   name: string;
   id: number;
-  priority: number;
+  type: CrateType;
+  metadata: any;
+
+}
+
+export enum CrateType{
+  PLAYLIST=0,
+  SAMPLER=1,
+  ENVIRONMENT=2
 }

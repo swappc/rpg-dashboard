@@ -1,0 +1,16 @@
+<h1 mat-dialog-title>{{ data.method }} Crate</h1>
+<div mat-dialog-content>
+    <p>Crate Name:</p>
+    <mat-form-field>
+        <input matInput [(ngModel)]="data.name">
+    </mat-form-field>
+    <p>Crate Type:</p>
+
+    <mat-select [(ngModel)]="data.type">
+        <mat-option *ngFor="let crateType of keys" value="{{crateType}}">{{crateType}}</mat-option>
+    </mat-select>
+</div>
+<div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()">Cancel</button>
+    <button mat-button [mat-dialog-close]="data" cdkFocusInitial>{{ data.method }}</button>
+</div>

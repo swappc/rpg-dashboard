@@ -14,12 +14,23 @@ var path = require('path');
 const args = require('minimist')(process.argv.slice(2))
 
 let serverRoot = args['serverRoot'] ? args['serverRoot'] : './server';
+if(args['dbinit']){
+  fs.unlink(serverRoot+'/db/crates.db', (err)=>{
+    if(err){
+      console.log('Unable to delete existing database.');
+      console.log(err);
+    }else{
+      console.log('Existing database deleted');
+    }
+  })
+}
 
-let db = new sqlite3.Database(serverRoot + '/db/playlists.db', (err) => {
+
+let db = new sqlite3.Database(serverRoot + '/db/crates.db', (err) => {
   if (err) {
     console.error(err.message);
   }
-  console.log('Connected to playlists db');
+  console.log('Connected to crates db');
 });
 
 if (args['dbinit']) {
@@ -40,11 +51,10 @@ if (args['dbinit']) {
       })
     }
 
-    db.run('CREATE TABLE IF NOT EXISTS playlists (id INTEGER PRIMARY KEY, name TEXT NOT NULL, priority INTEGER UNIQUE)')
-      .run('CREATE TABLE IF NOT EXISTS playlist_tracks (trackId INTEGER NOT NULL, playlistId INTEGER NOT NULL, PRIMARY KEY (trackId, playlistId))')
+    db.run('CREATE TABLE IF NOT EXISTS crates (id INTEGER PRIMARY KEY, name TEXT NOT NULL, type TEXT NOT NULL, metadata BLOB)')
+      .run('CREATE TABLE IF NOT EXISTS crate_tracks (trackId INTEGER NOT NULL, crateId INTEGER NOT NULL, PRIMARY KEY (trackId, crateId))')
       .run('CREATE TABLE IF NOT EXISTS library (folder TEXT UNIQUE NOT NULL)')
-      .run('CREATE TABLE IF NOT EXISTS library_tracks(id INTEGER PRIMARY KEY, trackName TEXT UNIQUE NOT NULL, trackFile TEXT NOT NULL)')
-      .run('CREATE TABLE IF NOT EXISTS sampler_tracks(page INTEGER NOT NULL, row INTEGER NOT NULL, col INTEGER NOT NULL,trackId INTEGER NOT NULL,PRIMARY KEY(page, row, col))');
+      .run('CREATE TABLE IF NOT EXISTS library_tracks(id INTEGER PRIMARY KEY, trackName TEXT UNIQUE NOT NULL, trackFile TEXT NOT NULL)');
 
     var libraryPath = args['library'] ? args['library'] : serverRoot + '/assets';
 
@@ -58,10 +68,10 @@ if (args['dbinit']) {
         processDirectory(row.folder, '/assets/library' + row.rowid);
       })
       fs.readFile(serverRoot + '/playlists.json', 'utf8', function (err, contents) {
-        db.run('DELETE FROM playlists');
-        db.run('DELETE FROM playlist_tracks');
+        db.run('DELETE FROM crates');
+        db.run('DELETE FROM crate_tracks');
         JSON.parse(contents).forEach((playlist, index) => {
-          db.run('INSERT INTO playlists(id, name) VALUES (?,?)', [index, playlist.name]);
+          db.run('INSERT INTO crates(id, name, type, metadata) VALUES (?,?, "PLAYLIST", ?)', [index, playlist.name, JSON.stringify({ priority: index })]);
           var playlistFiles = playlist.files.map((track) => track.name);
           var placeholders = '(' + playlist.files.map(() => '?').join(',') + ')';
 
@@ -73,15 +83,18 @@ if (args['dbinit']) {
                 insertValues.push(row.id);
               })
               var insertPlaceholders = rows.map(() => '(?,?)').join(',');
-              db.run('INSERT INTO playlist_tracks(playlistId, trackId) VALUES ' + insertPlaceholders, insertValues);
+              db.run('INSERT INTO crate_tracks(crateId, trackId) VALUES ' + insertPlaceholders, insertValues);
             }
           })
         });
       });
     });
+    console.log('Database initialized');
 
 
   })
+
+
 }
 
 let clientRoot = args['clientRoot'] ? args['clientRoot'] : '../client';
@@ -124,26 +137,30 @@ if (args['angular']) {
 
 }
 
-app.post('/api/playlists', (request, response) => {
+app.post('/api/crates', (request, response) => {
 
   var name = request.body.name;
-  db.run('INSERT INTO playlists(name) VALUES (?)', [name], (err, row) => {
-    db.get("SELECT last_insert_rowid() as 'id' FROM playlists", [], (err, row) => {
-      var playlist = {};
-      playlist.name = name;
-      playlist.id = row.id;
-      playlist.files = [];
+  var type = request.body.type;
+  var metadata = request.body.metadata ? request.body.metadata : {};
+  db.run('INSERT INTO crates(name, type, metadata) VALUES (?, ?, ?)', [name, type, JSON.stringify(metadata)], (err, row) => {
+    db.get("SELECT last_insert_rowid() as 'id' FROM crates", [], (err, row) => {
+      var crate = {};
+      crate.name = name;
+      crate.id = row.id;
+      crate.type = type;
+      crate.metadata = metadata;
+      crate.files = [];
 
-      response.status(201).json(playlist);
+      response.status(201).json(crate);
     });
   });
 
 });
 
-app.delete('/api/playlists/:playlistId', (request, response) => {
-  var playlistId = request.param('playlistId');
+app.delete('/api/crates/:crateId', (request, response) => {
+  var crateId = request.param('crateId');
 
-  db.get('SELECT id, name, priority FROM playlists WHERE id = ?', [playlistId], (err, row) => {
+  db.get('SELECT id, name FROM crates WHERE id = ?', [crateId], (err, row) => {
     if (err) {
       response.status(500).json(err);
       return;
@@ -155,13 +172,13 @@ app.delete('/api/playlists/:playlistId', (request, response) => {
     }
 
     var returnRes = row;
-    db.run('DELETE FROM playlists WHERE id = ?', [playlistId], (err, row) => {
+    db.run('DELETE FROM crates WHERE id = ?', [crateId], (err, row) => {
       if (err) {
         response.status(500).json(err);
         return;
       }
 
-      db.run('DELETE FROM playlist_tracks WHERE playlistId = ?', [playlistId], (err, row) => {
+      db.run('DELETE FROM crate_tracks WHERE crateId = ?', [crateId], (err, row) => {
         if (err) {
           response.status(500).json(err);
           return;
@@ -176,24 +193,30 @@ app.delete('/api/playlists/:playlistId', (request, response) => {
 
 });
 
-app.patch('/api/playlists/:playlistId', (request, response) => {
-  var playlistId = request.param('playlistId');
+app.patch('/api/crate/:crateId', (request, response) => {
+  var crateId = request.param('crateId');
   var name = request.body.name;
-  var priority = request.body.priority;
-  var sql = '';
+  var type = request.body.type;
+  var metadata = request.body.metadata;
   var values = [];
+  var updates = [];
   if (name) {
-    sql += ' name = ? ';
+    updates.push(' name = ? ');
     values.push(name);
   }
-  if (priority && priority > 0) {
-    sql += (sql.length > 0 ? ',' : '') + ' priority = ? ';
-    values.push(priority);
+  if (type && type > 0) {
+    updates.push(' type = ? ');
+    values.push(type);
+  }
+
+  if (metadata && metadata > 0) {
+    updates.push(' metadata = ? ');
+    values.push(JSON.stringify(metadata));
   }
 
   if (sql.length > 0 && values.length > 0) {
-    values.push(playlistId);
-    db.run('UPDATE playlists SET ' + sql + 'WHERE id = ?', values, (err, row) => {
+    values.push(crateId);
+    db.run('UPDATE crates SET ' + updates.join(',') + 'WHERE id = ?', values, (err, row) => {
       if (err) {
         response.status(500).json(err);
         return;
@@ -205,11 +228,11 @@ app.patch('/api/playlists/:playlistId', (request, response) => {
   }
 });
 
-app.put('/api/playlists/:playlistId/tracks', (request, response) => {
-  var playlistId = request.param('playlistId');
+app.put('/api/crates/:crateId/tracks', (request, response) => {
+  var crateId = request.param('crateId');
   var tracks = request.body;
 
-  db.run('DELETE FROM playlist_tracks WHERE playlistId = ?', [playlistId], (err, row) => {
+  db.run('DELETE FROM crate_tracks WHERE crateId = ?', [crateId], (err, row) => {
     if (err) {
       console.log(err);
       response.status(500).json(err);
@@ -218,21 +241,22 @@ app.put('/api/playlists/:playlistId/tracks', (request, response) => {
 
     var insertValues = [];
     tracks.forEach((track) => {
-      insertValues.push(playlistId);
+      insertValues.push(crateId);
       insertValues.push(track.id);
     })
     var insertPlaceholders = tracks.map(() => '(?,?)').join(',');
-    db.run('INSERT INTO playlist_tracks(playlistId, trackId) VALUES ' + insertPlaceholders, insertValues);
+    db.run('INSERT INTO crate_tracks(crateId, trackId) VALUES ' + insertPlaceholders, insertValues);
   });
 })
 
-app.get('/api/playlists', (request, response) => {
+app.get('/api/crates', (request, response) => {
 
   db.all(
     "SELECT p.name, \
             p.id, \
-            p.priority \
-  FROM playlists p \
+            p.type, \
+            p.metadata \
+  FROM crates p \
   order by p.name", [], (err, rows) => {
 
       if (err) {
@@ -242,11 +266,12 @@ app.get('/api/playlists', (request, response) => {
 
       var retVal = [];
       rows.forEach((row) => {
-        var playlist = {};
-        playlist.name = row.name;
-        playlist.id = row.id;
-        playlist.priority = row.priority;
-        retVal.push(playlist);
+        var crate = {};
+        crate.name = row.name;
+        crate.id = row.id;
+        crate.type = row.type;
+        crate.metadata = JSON.parse(row.metadata);
+        retVal.push(crate);
       })
 
       response.status(200).json(retVal);
@@ -254,17 +279,17 @@ app.get('/api/playlists', (request, response) => {
     })
 });
 
-app.get('/api/playlists/:playlistId/tracks', (request, response) => {
-  var playlistId = request.param('playlistId');
-  if (playlistId) {
+app.get('/api/crates/:crateId/tracks', (request, response) => {
+  var crateId = request.param('crateId');
+  if (crateId) {
     db.all(
       "SELECT lt.trackName, \
               lt.trackFile, \
               lt.rowid \
-    FROM playlist_tracks pt \
+    FROM crate_tracks pt \
     JOIN library_tracks lt ON lt.rowid = pt.trackId \
-    WHERE pt.playlistId = ? \
-    order by lt.trackName", [playlistId], (err, rows) => {
+    WHERE pt.crateId = ? \
+    order by lt.trackName", [crateId], (err, rows) => {
 
         if (err) {
           response.status(500).json(err);
@@ -276,7 +301,7 @@ app.get('/api/playlists/:playlistId/tracks', (request, response) => {
           var track = {};
           track.name = row.trackName;
           track.file = row.trackFile;
-          track.id = row.rowid;
+          track.id = row.id;
           retVal.push(track);
         })
 
@@ -296,45 +321,6 @@ app.get('/api/library', (request, response) => {
       response.json(200, rows);
     })
 });
-
-app.get('/api/sampler',(request, response)=>{
-  db.all(
-    "SELECT st.page, st.row, st.col, lt.id, lt.trackName, lt.trackFile \
-    FROM sampler_tracks st \
-    JOIN library_tracks lt on st.trackId=lt.id",[],(err,rows)=>{
-      var retVal = [];
-      rows.forEach((data)=>{
-        retVal.push({
-          page:data.page,
-          row: data.row,
-          col: data.col,
-          track: {
-            id: data.id,
-            name: data.trackName,
-            file: data.trackFile
-          }
-        })
-      })
-      response.status(200).json(retVal);
-    }
-  )
-});
-
-app.put('/api/sampler', (request, response) => {
-  db.run('DELETE FROM sampler_tracks',[],(err, row)=>{
-    var insertValues = [];
-    var samplers = request.body;
-    var insertPlaceholders = samplers.map(()=>'(?,?,?,?)').join(',');
-    samplers.forEach((sampler)=>
-    {
-      insertValues.push(sampler.page);
-      insertValues.push(sampler.row);
-      insertValues.push(sampler.col);
-      insertValues.push(sampler.track.id);
-    })
-    db.run('INSERT INTO sampler_tracks (page, row, col, trackId) VALUES '+ insertPlaceholders, insertValues);
-  })
-})
 
 app.listen(port, (err) => {
   if (err) {

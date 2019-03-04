@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { PlaylistPlayerComponent } from './playlist-player/playlist-player.component';
-import { PlaylistManagerComponent } from './playlist-manager/playlist-manager.component';
+import { CrateManagerComponent } from './crate-manager/crate-manager.component';
 
 
 const routes: Routes = [
@@ -21,7 +21,7 @@ const routes: Routes = [
   // },
   { path: '', redirectTo: '/player', pathMatch: 'full' },
   { path: 'player', component: PlaylistPlayerComponent },
-  { path: 'manager', component: PlaylistManagerComponent },
+  { path: 'manager', component: CrateManagerComponent},
   { path: '**', component: PageNotFoundComponent }
 ];
 

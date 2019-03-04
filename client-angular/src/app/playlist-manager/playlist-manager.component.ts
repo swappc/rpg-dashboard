@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatOptionSelectionChange, MatDialogRef, MAT_DIALOG_DATA, MatDialog, MatSelectionListChange } from '@angular/material';
-import { LibraryService, Playlist} from '../library.service';
+import { LibraryService, Crate} from '../library.service';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { Track } from '../track';
 
@@ -15,7 +15,7 @@ export interface DialogData {
 })
 export class PlaylistManagerComponent implements OnInit {
   selected = null;
-  playlists: Playlist[];
+  playlists: Crate[];
   libraryTracks: Track[];
   playlistTracks: Track[];
   currentPlaylist = null;
@@ -36,7 +36,7 @@ export class PlaylistManagerComponent implements OnInit {
   }
 
   getPlaylists() {
-    this.libraryService.getPlaylists()
+    this.libraryService.getCrates()
       .subscribe(playlists => {
         this.playlists = playlists;
         if (playlists.length > 0) {
@@ -70,7 +70,7 @@ export class PlaylistManagerComponent implements OnInit {
   }
 
   populateTrackList(): void {
-    this.libraryService.getPlaylistTracks(this.currentPlaylist.id).subscribe(playlistTracks => {
+    this.libraryService.getCrateTracks(this.currentPlaylist.id).subscribe(playlistTracks => {
       this.playlistTracks = playlistTracks;
     });
   }
@@ -119,9 +119,9 @@ export class PlaylistManagerComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        var playlist = new Playlist();
+        var playlist = new Crate();
         playlist.name = result;
-        this.libraryService.createPlaylist(playlist)
+        this.libraryService.createCrate(playlist)
           .subscribe(playlist => {
             this.playlists.push(playlist);
             this.sortPlaylists();
@@ -144,10 +144,10 @@ export class PlaylistManagerComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        var playlist = new Playlist();
+        var playlist = new Crate();
         playlist.name = result;
         playlist.id = this.currentPlaylist.id;
-        this.libraryService.updatePlaylist(playlist)
+        this.libraryService.updateCrate(playlist)
           .subscribe(playlist => {
             console.log(playlist.name);
             this.currentPlaylist.name = playlist.name;
@@ -162,7 +162,7 @@ export class PlaylistManagerComponent implements OnInit {
       return;
     }
 
-    this.libraryService.savePlaylistTracks(this.currentPlaylist, this.playlistTracks).subscribe(savedTracks => {
+    this.libraryService.saveCrateTracks(this.currentPlaylist, this.playlistTracks).subscribe(savedTracks => {
       this.populateTrackList();
       this.populateLibrary();
     })
@@ -188,7 +188,7 @@ export class PlaylistManagerComponent implements OnInit {
     dialogConf.afterClosed().subscribe(result => {
       if (result == true) {
         console.log("Deleting Playlist: " + this.currentPlaylist.name)
-        this.libraryService.deletePlaylist(this.currentPlaylist).subscribe(noReponse => {
+        this.libraryService.deleteCrate(this.currentPlaylist).subscribe(noReponse => {
           this.playlists = this.playlists.filter((value, index, arr) => {
             return value.name != this.currentPlaylist.name;
           });

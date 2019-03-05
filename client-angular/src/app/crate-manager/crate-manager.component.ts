@@ -5,7 +5,7 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.compone
 import { Track } from '../track';
 import { EnumHelpers } from '../enum-helper';
 import { SamplerPlayer } from '../sampler-player';
-import { DialogData } from '../DialogData';
+import { DialogData } from '../dialog-data';
 
 @Component({
   selector: 'app-crate-manager',

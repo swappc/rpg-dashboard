@@ -7,14 +7,14 @@
   </mat-grid-tile>
 
   <mat-grid-tile colspan="2" rowspan="1">
-    <button mat-button id="prevTrackButton" (click)="previous()" [disabled]="!currentPlayer">
+    <button mat-button id="prevTrackButton" (click)="playlistAudioService.previous()">
       <mat-icon>skip_previous</mat-icon>
     </button>
-    <button mat-button id="playPauseButton" (click)="togglePlay()" [disabled]="!currentPlayer">
-      <mat-icon *ngIf="!isPlaying()">play_arrow</mat-icon>
-      <mat-icon *ngIf="isPlaying()">pause</mat-icon>
+    <button mat-button id="playPauseButton" (click)="playlistAudioService.togglePlay()">
+      <mat-icon *ngIf="!playlistAudioService.isPlaying()">play_arrow</mat-icon>
+      <mat-icon *ngIf="playlistAudioService.isPlaying()">pause</mat-icon>
     </button>
-    <button mat-button id="nextTrackButton" (click)="next()" [disabled]="!currentPlayer">
+    <button mat-button id="nextTrackButton" (click)="playlistAudioService.next()">
       <mat-icon>skip_next</mat-icon>
     </button>
   </mat-grid-tile>
@@ -23,19 +23,19 @@
 
     <label>{{formatSecondString(this.currentProgress)}}</label>
 
-    <mat-slider min="0" [max]="trackDuration" [value]="currentProgress" (input)="setPosition($event)"></mat-slider>
+    <mat-slider min="0" [max]="trackDuration" [value]="currentProgress" (input)="playlistAudioService.setPosition($event.value)"></mat-slider>
     <label>{{formatSecondString(this.trackDuration)}}</label>
 
   </mat-grid-tile>
   <mat-grid-tile colspan="2" rowspan="1">
     <mat-icon>volume_up</mat-icon>
-    <mat-slider thumbLabel [displayWith]="formatVolumeLabel" min="0" step=".01" max="1" [value]="volume"
-      (input)="changeVolume($event)"></mat-slider>
+    <mat-slider thumbLabel [displayWith]="formatVolumeLabel" min="0" step=".01" max="1" [value]="playlistAudioService.volume"
+      (input)="playlistAudioService.setVolume($event.value)"></mat-slider>
   </mat-grid-tile>
 
   <mat-grid-tile colspan="6" rowspan="1">
     <mat-button-toggle-group name="currentPlaylistGroup" aria-label="Font Style">
-      <mat-button-toggle *ngFor="let playlist of playlists" (click)="setPlaylist(playlist)"
+      <mat-button-toggle *ngFor="let playlist of playlistAudioService.playlists" (click)="playlistAudioService.setPlaylist(playlist)"
         checked="{{currentPlaylist==playlist.name}}">{{playlist.name}}</mat-button-toggle>
     </mat-button-toggle-group>
   </mat-grid-tile>

@@ -5,11 +5,7 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.compone
 import { Track } from '../track';
 import { EnumHelpers } from '../enum-helper';
 import { SamplerPlayer } from '../sampler-player';
-
-export interface DialogData {
-  name: string;
-  type: CrateType;
-}
+import { DialogData } from '../DialogData';
 
 @Component({
   selector: 'app-crate-manager',
@@ -121,7 +117,7 @@ export class CrateManagerComponent implements OnInit {
     const dialogRef = this.dialog.open(CrateManagerNewCrateDialog, {
       width: '250px',
       data: {
-        name: this.currentCrateName,
+        name: "",
         method: "Create"
       }
     });

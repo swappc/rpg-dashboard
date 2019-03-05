@@ -11,7 +11,6 @@ import { AppComponent } from './app.component';
 import { PlaylistPlayerComponent } from './playlist-player/playlist-player.component';
 import { AppRoutingModule } from './app-routing.module';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
-import { PlaylistManagerComponent, PlaylistManagerNewPlaylistDialog} from './playlist-manager/playlist-manager.component';
 import { CustomReuseStrategy } from './CustomRouteReuseStrategy';
 import { TrackFilterPipe } from './track-filter.pipe';
 import { NgDragDropModule } from 'ng-drag-drop';
@@ -25,8 +24,6 @@ import { CrateFilterPipe } from './playlist-filter.pipe';
     AppComponent,
     PlaylistPlayerComponent,
     PageNotFoundComponent,
-    PlaylistManagerComponent,
-    PlaylistManagerNewPlaylistDialog,
     TrackFilterPipe,
     CrateManagerComponent,
     CrateManagerNewCrateDialog,
@@ -43,7 +40,7 @@ import { CrateFilterPipe } from './playlist-filter.pipe';
     NgDragDropModule.forRoot(),
     ScrollingModule
   ],
-  entryComponents: [PlaylistManagerNewPlaylistDialog, ConfirmDialogComponent, CrateManagerNewCrateDialog],
+  entryComponents: [ConfirmDialogComponent, CrateManagerNewCrateDialog],
   providers: [{ provide: RouteReuseStrategy, useClass: CustomReuseStrategy }],
   bootstrap: [AppComponent]
 })

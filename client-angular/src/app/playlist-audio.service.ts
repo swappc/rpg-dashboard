@@ -30,6 +30,9 @@ export class PlaylistAudioService {
     this.libraryService.getCrates()
       .subscribe(playlists => {
         this.playlists = playlists;
+        var event = new PlaylistAudioEvent(PlaylistAudioEventType.PLAYLISTS_LOADED);
+        event.data.playlists = playlists;
+        this.eventSubject.next(event);
       });
   }
 
@@ -59,6 +62,7 @@ export class PlaylistAudioService {
     this.libraryService.getCrateTracks(playlist.id).subscribe(playlistTracks => {
       this.currentPlayer.setPlaylist(playlistTracks);
       this.currentPlayer.fadeIn(this.volume);
+      this.eventSubject.next(new PlaylistAudioEvent(PlaylistAudioEventType.PLAY));
     });
 
     var event = new PlaylistAudioEvent(PlaylistAudioEventType.PLAYLIST_SET)
@@ -152,5 +156,6 @@ export enum PlaylistAudioEventType {
   PAUSE,
   TRACK_CHANGE,
   VOLUME_CHANGE,
-  PROGRESS_UPDATE
+  PROGRESS_UPDATE,
+  PLAYLISTS_LOADED
 }

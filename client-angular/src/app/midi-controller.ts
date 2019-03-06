@@ -154,9 +154,9 @@ export class CallbackKey extends PushKey {
         super(colordef, colorpush);
     }
 
-    callback() {
+    onPush() {
         this.delegate();
-        super.callback();
+        super.onPush();
     }
 }
 

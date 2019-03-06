@@ -67,6 +67,7 @@ export class CrateManagerComponent implements OnInit {
   crateClicked(crateTrack: Track) {
     this.crateTracks = this.crateTracks.filter((value, index, array) => {
       return value.name != crateTrack.name;
+
     });
     this.libraryTracks.push(crateTrack);
     this.sortArrayByName(this.libraryTracks);

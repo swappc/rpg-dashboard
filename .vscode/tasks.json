@@ -8,7 +8,7 @@
             "type": "shell",
             "command":"ng build --watch",
             "options": {
-                "cwd": "${workspaceFolder}/client-angular"
+                "cwd": "${workspaceFolder}/client"
             }
         }
     ]

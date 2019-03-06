@@ -2,7 +2,7 @@
 /client/public/music/*
 *node_modules
 *.db
-client-angular/dist
-client-angular/node_modules
+client/dist
+client/node_modules
 server/assets
 server/playlist.json

@@ -33,6 +33,7 @@ export class MidiService {
       this.controller.setupBtn(0, 3, 7 - i, tempKey);
       this.volumeKeys.push(tempKey);
     }
+    this.onVolumeChange(this.playlistAudioService.volume);
 
 
 

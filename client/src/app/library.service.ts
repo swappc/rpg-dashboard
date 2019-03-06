@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Track } from './track';
+import { Controller } from './midi.service';
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -45,6 +46,18 @@ export class LibraryService {
 
   getLibraryTracks(): Observable<Track[]> {
     return this.http.get<Track[]>('/api/library');
+  }
+
+  getMidiControllers(): Observable<Controller[]>{
+    return this.http.get<Controller[]>('/api/controllers');
+  }
+
+  createMidiController(create: Controller): Observable<Controller>{
+    return this.http.post<Controller>('/api/controllers', create, httpOptions);
+  }
+
+  updateMidiController(create: Controller): Observable<Controller>{
+    return this.http.put<Controller>('/api/controllers'+create.id, create, httpOptions);
   }
 }
 

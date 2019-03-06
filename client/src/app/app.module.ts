@@ -18,6 +18,7 @@ import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.componen
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CrateManagerComponent, CrateManagerNewCrateDialog } from './crate-manager/crate-manager.component';
 import { CrateFilterPipe } from './playlist-filter.pipe';
+import { ControllerEditorComponent } from './controller-editor/controller-editor.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { CrateFilterPipe } from './playlist-filter.pipe';
     CrateManagerComponent,
     CrateManagerNewCrateDialog,
     CrateFilterPipe,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    ControllerEditorComponent
   ],
   imports: [
     BrowserModule,

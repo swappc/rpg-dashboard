@@ -30,7 +30,7 @@ if (args['dbinit']) {
     open5e.initDB(db);
   });
 } else {
-  var db = appDB.getDB();
+  var db = appDB.getDB(serverRoot, sqlite3);
   midi.setDB(db);
   crate.setDB(db);
   open5e.setDB(db);

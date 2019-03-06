@@ -148,3 +148,9 @@ export class MidiService {
 
   }
 }
+
+export class Controller{
+  id: number;
+  name: string;
+  hardwareName: string;
+}

@@ -1,0 +1,29 @@
+.controller_selector {
+    /* padding-left: 20px; */
+    padding-bottom: 2px;
+}
+
+.controller-container {
+    min-width: 350px;
+    max-width: 100%;
+    margin: 0 5px 25px 0;
+    display: inline-block;
+    vertical-align: top;
+    padding-left: 10px;
+}
+.manager-viewport {
+    height: 500px;
+    min-width: 375px;
+    border: 1px solid #ccc;
+  }
+
+.manager-box {
+  border-bottom: solid 1px #ccc;
+  color: rgba(0, 0, 0, 0.87);
+  font-size: 14px;
+}
+
+.manager-box:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+}
+

@@ -1,0 +1,31 @@
+<div class="controller-container">
+
+
+  <mat-select placeholder="Controller" [(value)]="currentControllerName">
+    <mat-option *ngFor="let controller of controllers" [value]="controller.name"
+      (onSelectionChange)="controllerChanged($event, controller)">
+      {{ controller.name }}
+    </mat-option>
+  </mat-select>
+  <button mat-icon-button (click)="newControllerClicked()" matTooltip="Add new controller">
+    <mat-icon>add_circle_outline</mat-icon>
+  </button>
+
+
+
+
+
+
+
+
+
+    <button mat-icon-button (click)="deleteControllerClicked()" matTooltip="Delete controller"
+      [disabled]="controllerNotSelected()">
+      <mat-icon>delete</mat-icon>
+    </button>
+    <button mat-icon-button (click)="saveControllerTracksClicked()" matTooltip="Save controller tracks"
+      [disabled]="controllerNotSelected()">
+      <mat-icon>save</mat-icon>
+    </button>
+</div>
+<div>Controller grid</div>

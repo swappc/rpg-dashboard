@@ -4,6 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { PlaylistPlayerComponent } from './playlist-player/playlist-player.component';
 import { CrateManagerComponent } from './crate-manager/crate-manager.component';
+import { ControllerEditorComponent } from './controller-editor/controller-editor.component';
 
 
 const routes: Routes = [
@@ -22,6 +23,7 @@ const routes: Routes = [
   { path: '', redirectTo: '/player', pathMatch: 'full' },
   { path: 'player', component: PlaylistPlayerComponent },
   { path: 'manager', component: CrateManagerComponent},
+  { path: 'controller', component: ControllerEditorComponent},
   { path: '**', component: PageNotFoundComponent }
 ];
 

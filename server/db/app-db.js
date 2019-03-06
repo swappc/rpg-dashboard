@@ -39,7 +39,7 @@ class AppDB {
             if (err) {
                 console.error(err.message);
             }
-            console.log('Connected to crates db');
+            console.log('Connected to db');
         });
     }
 

@@ -45,15 +45,15 @@ app.get('/', (request, response) => {
   response.redirect("http://127.0.0.1:3000/index.html")
 })
 
-app.use('/', express.static("./client-angular/dist/client-angular/"))
+app.use('/', express.static("./client/dist/client/"))
 
-app.use('/index.html', express.static("./client-angular/dist/client-angular/index.html"))
+app.use('/index.html', express.static("./client/dist/client/index.html"))
 
 app.use(function (req, res, next) {
   var url = require("url");
   var result = url.parse(req.url);
   if (!result.path.startsWith("/api") && !result.path.startsWith("/assets")) {
-    res.sendfile('./client-angular/dist/client-angular/')
+    res.sendfile('./client/dist/client/')
   }
   else {
     next();

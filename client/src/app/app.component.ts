@@ -9,7 +9,7 @@ import { MidiService } from './midi.service';
 })
 export class AppComponent implements OnDestroy {
   mobileQuery: MediaQueryList;
-  title = 'client-angular';
+  title = 'client';
 
   private _mobileQueryListener: () => void;
 

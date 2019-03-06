@@ -6,9 +6,8 @@ class Open5e {
 
   initDB(db) {
     this.setDB(db);
-    console.log(db);
     this.odb.createTables();
-    //open5e.getClasses(classes => this.odb.populateClasses(classes));
+    open5e.getClasses(classes => this.odb.populateClasses(classes));
   }
 
   setDB(db) {

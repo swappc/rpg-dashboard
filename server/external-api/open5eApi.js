@@ -49,7 +49,6 @@ class Open5eAPI {
         accept: '*/*'
       }
     };
-    console.log(options.host + options.path)
     var buffer = "",
         data;
 
@@ -61,8 +60,8 @@ class Open5eAPI {
 
       res.on('end', function (err) {
 
-        console.log(err);
         if (err) {
+          console.log(err);
           return;
         }
 
@@ -83,7 +82,6 @@ class Open5eAPI {
   }
 
   getAllWithPage(results, page, route, callback) {
-    console.log("Getting page: " + (page ? '1' : page));
 
     this.getOpen5eApi(route, page, (jsonData) => {
       if (!jsonData) {
@@ -97,7 +95,6 @@ class Open5eAPI {
       }
 
       var page = jsonData.next.split(/.*=/)[1];
-      console.log("Page Match " + page);
       this.getAllWithPage(results, page, route, callback);
     })
   }
